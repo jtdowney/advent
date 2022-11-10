@@ -22,19 +22,19 @@ impl FromStr for Input {
     type Err = eyre::Report;
 
     fn from_str(s: &str) -> eyre::Result<Self> {
-	s.lines().try_fold(Input::default(), |mut acc, line| {
-	    let captures = REGEX.captures(line).context("unable to match line: {s}")?;
-	    let start = captures.name("start").unwrap().as_str().to_string();
-	    let end = captures.name("end").unwrap().as_str().to_string();
-	    let distance = captures
-		.name("distance")
-		.and_then(|v| v.as_str().parse().ok())
-		.unwrap();
-	    acc.locations.insert(start.clone());
-	    acc.locations.insert(end.clone());
-	    acc.distances.insert((start, end), distance);
-	    Ok(acc)
-	})
+        s.lines().try_fold(Input::default(), |mut acc, line| {
+            let captures = REGEX.captures(line).context("unable to match line: {s}")?;
+            let start = captures.name("start").unwrap().as_str().to_string();
+            let end = captures.name("end").unwrap().as_str().to_string();
+            let distance = captures
+                .name("distance")
+                .and_then(|v| v.as_str().parse().ok())
+                .unwrap();
+            acc.locations.insert(start.clone());
+            acc.locations.insert(end.clone());
+            acc.distances.insert((start, end), distance);
+            Ok(acc)
+        })
     }
 }
 
@@ -45,23 +45,25 @@ fn generator(input: &str) -> eyre::Result<Input> {
 
 fn distances(input: &Input) -> impl Iterator<Item = usize> + '_ {
     input
-	.locations
-	.iter()
-	.permutations(input.locations.len())
-	.filter_map(|route| {
-	    route
-		.iter()
-		.tuple_windows()
-		.map(|(first, second)| {
-		    input
-			.distances
-			.get(&(first.to_string(), second.to_string()))
-			.or_else(|| input
-			    .distances
-			    .get(&(second.to_string(), first.to_string())))
-		})
-		.sum()
-	})
+        .locations
+        .iter()
+        .permutations(input.locations.len())
+        .filter_map(|route| {
+            route
+                .iter()
+                .tuple_windows()
+                .map(|(first, second)| {
+                    input
+                        .distances
+                        .get(&(first.to_string(), second.to_string()))
+                        .or_else(|| {
+                            input
+                                .distances
+                                .get(&(second.to_string(), first.to_string()))
+                        })
+                })
+                .sum()
+        })
 }
 
 #[aoc(day9, part1)]

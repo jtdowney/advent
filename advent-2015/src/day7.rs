@@ -78,11 +78,11 @@ fn instruction(input: &str) -> IResult<&str, Instruction> {
     let (input, destination) = alpha1(input)?;
     let destination = destination.to_string();
     Ok((
-	input,
-	Instruction {
-	    expression,
-	    destination,
-	},
+        input,
+        Instruction {
+            expression,
+            destination,
+        },
     ))
 }
 
@@ -109,11 +109,11 @@ impl FromStr for Instruction {
     type Err = eyre::Report;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-	match instruction(s) {
-	    Ok(("", instruction)) => Ok(instruction),
-	    Ok((input, _)) => bail!("extra input at end: {input}"),
-	    Err(e) => bail!("failed to parse \"{s}\": {e}"),
-	}
+        match instruction(s) {
+            Ok(("", instruction)) => Ok(instruction),
+            Ok((input, _)) => bail!("extra input at end: {input}"),
+            Err(e) => bail!("failed to parse \"{s}\": {e}"),
+        }
     }
 }
 
@@ -123,49 +123,49 @@ fn execute(
     cache: &mut HashMap<String, u16>,
 ) -> u16 {
     match expression {
-	Expression::Literal(value) => *value,
-	Expression::Variable(name) => match cache.get(name) {
-	    Some(v) => *v,
-	    None => {
-		let value = execute(&environment[name], environment, cache);
-		cache.insert(name.to_string(), value);
-		value
-	    }
-	},
-	Expression::And(lhs, rhs) => {
-	    let lhs = execute(lhs, environment, cache);
-	    let rhs = execute(rhs, environment, cache);
-	    lhs & rhs
-	}
-	Expression::Or(lhs, rhs) => {
-	    let lhs = execute(lhs, environment, cache);
-	    let rhs = execute(rhs, environment, cache);
-	    lhs | rhs
-	}
-	Expression::LeftShift(lhs, rhs) => {
-	    let lhs = execute(lhs, environment, cache);
-	    let rhs = execute(rhs, environment, cache);
-	    lhs << rhs
-	}
-	Expression::RightShift(lhs, rhs) => {
-	    let lhs = execute(lhs, environment, cache);
-	    let rhs = execute(rhs, environment, cache);
-	    lhs >> rhs
-	}
-	Expression::Not(expr) => {
-	    let value = execute(expr, environment, cache);
-	    !value
-	}
+        Expression::Literal(value) => *value,
+        Expression::Variable(name) => match cache.get(name) {
+            Some(v) => *v,
+            None => {
+                let value = execute(&environment[name], environment, cache);
+                cache.insert(name.to_string(), value);
+                value
+            }
+        },
+        Expression::And(lhs, rhs) => {
+            let lhs = execute(lhs, environment, cache);
+            let rhs = execute(rhs, environment, cache);
+            lhs & rhs
+        }
+        Expression::Or(lhs, rhs) => {
+            let lhs = execute(lhs, environment, cache);
+            let rhs = execute(rhs, environment, cache);
+            lhs | rhs
+        }
+        Expression::LeftShift(lhs, rhs) => {
+            let lhs = execute(lhs, environment, cache);
+            let rhs = execute(rhs, environment, cache);
+            lhs << rhs
+        }
+        Expression::RightShift(lhs, rhs) => {
+            let lhs = execute(lhs, environment, cache);
+            let rhs = execute(rhs, environment, cache);
+            lhs >> rhs
+        }
+        Expression::Not(expr) => {
+            let value = execute(expr, environment, cache);
+            !value
+        }
     }
 }
 
 #[aoc_generator(day7)]
 fn generator(input: &str) -> eyre::Result<Environment> {
     input
-	.lines()
-	.map(str::parse::<Instruction>)
-	.map(|instruction| instruction.map(|i| (i.destination, i.expression)))
-	.collect()
+        .lines()
+        .map(str::parse::<Instruction>)
+        .map(|instruction| instruction.map(|i| (i.destination, i.expression)))
+        .collect()
 }
 
 #[aoc(day7, part1)]
