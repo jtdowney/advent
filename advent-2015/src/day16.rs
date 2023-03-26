@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
+use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
-use eyre::eyre;
 use nom::{
     bytes::complete::tag,
     character::complete::{alpha1, space1, u16},
@@ -52,14 +52,14 @@ fn sue(input: &str) -> IResult<&str, (usize, HashMap<String, usize>)> {
 }
 
 #[aoc_generator(day16)]
-fn generator(input: &str) -> eyre::Result<HashMap<usize, HashMap<String, usize>>> {
+fn generator(input: &str) -> anyhow::Result<HashMap<usize, HashMap<String, usize>>> {
     input
         .lines()
         .map(|line| {
             sue(line)
                 .finish()
                 .map(|(_, v)| v)
-                .map_err(|e| eyre!("unable to parse {line}: {e}"))
+                .map_err(|e| anyhow!("unable to parse {line}: {e}"))
         })
         .collect()
 }

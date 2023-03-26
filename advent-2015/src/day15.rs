@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
+use anyhow::bail;
 use aoc_runner_derive::{aoc, aoc_generator};
-use eyre::bail;
 use itertools::iproduct;
 use nom::{
     bytes::complete::tag,
@@ -31,7 +31,7 @@ fn ingrediant(input: &str) -> IResult<&str, (String, HashMap<String, isize>)> {
 }
 
 #[aoc_generator(day15)]
-fn generator(input: &str) -> eyre::Result<Ingrediants> {
+fn generator(input: &str) -> anyhow::Result<Ingrediants> {
     input.lines().try_fold(Ingrediants::new(), |mut acc, line| {
         match ingrediant(line).finish() {
             Ok((_, (key, value))) => acc.insert(key, value),

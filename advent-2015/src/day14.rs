@@ -1,7 +1,7 @@
 use std::{collections::HashMap, str::FromStr};
 
+use anyhow::Context;
 use aoc_runner_derive::{aoc, aoc_generator};
-use eyre::ContextCompat;
 use once_cell::sync::Lazy;
 use regex::Regex;
 
@@ -17,9 +17,9 @@ struct Reindeer {
 }
 
 impl FromStr for Reindeer {
-    type Err = eyre::Report;
+    type Err = anyhow::Error;
 
-    fn from_str(s: &str) -> eyre::Result<Self> {
+    fn from_str(s: &str) -> anyhow::Result<Self> {
         let captures = REGEX
             .captures(s)
             .context(format!("unable to match line: {s}"))?;
@@ -55,7 +55,7 @@ struct State {
 }
 
 #[aoc_generator(day14)]
-fn generator(input: &str) -> eyre::Result<Vec<Reindeer>> {
+fn generator(input: &str) -> anyhow::Result<Vec<Reindeer>> {
     input.lines().map(str::parse).collect()
 }
 
