@@ -1,5 +1,5 @@
+use anyhow::bail;
 use aoc_runner_derive::{aoc, aoc_generator};
-use eyre::bail;
 use nom::{
     branch::alt,
     bytes::complete::{is_not, tag, take_while_m_n},
@@ -67,7 +67,7 @@ fn generator(input: &str) -> Vec<String> {
 }
 
 #[aoc(day8, part1)]
-fn part1(lines: &[String]) -> eyre::Result<usize> {
+fn part1(lines: &[String]) -> anyhow::Result<usize> {
     lines
         .iter()
         .map(|line| {

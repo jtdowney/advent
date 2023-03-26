@@ -1,7 +1,7 @@
 use std::{collections::HashMap, str::FromStr};
 
+use anyhow::bail;
 use aoc_runner_derive::{aoc, aoc_generator};
-use eyre::bail;
 use nom::{
     branch::alt,
     bytes::complete::tag,
@@ -106,7 +106,7 @@ struct Instruction {
 type Environment = HashMap<String, Expression>;
 
 impl FromStr for Instruction {
-    type Err = eyre::Report;
+    type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match instruction(s) {
@@ -160,7 +160,7 @@ fn execute(
 }
 
 #[aoc_generator(day7)]
-fn generator(input: &str) -> eyre::Result<Environment> {
+fn generator(input: &str) -> anyhow::Result<Environment> {
     input
         .lines()
         .map(str::parse::<Instruction>)

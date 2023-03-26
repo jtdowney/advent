@@ -1,10 +1,10 @@
+use anyhow::Context;
 use aoc_runner_derive::{aoc, aoc_generator};
-use eyre::ContextCompat;
 
 type Dimension = (usize, usize, usize);
 
 #[aoc_generator(day2)]
-fn generator(input: &str) -> eyre::Result<Vec<Dimension>> {
+fn generator(input: &str) -> anyhow::Result<Vec<Dimension>> {
     let dimensions = input
         .lines()
         .map(|line| {
@@ -15,7 +15,7 @@ fn generator(input: &str) -> eyre::Result<Vec<Dimension>> {
                 gift.next().flatten().context("unable to read height")?,
             ))
         })
-        .collect::<eyre::Result<Vec<Dimension>>>()?;
+        .collect::<anyhow::Result<Vec<Dimension>>>()?;
 
     Ok(dimensions)
 }

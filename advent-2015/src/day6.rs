@@ -3,8 +3,8 @@ use std::{
     str::FromStr,
 };
 
+use anyhow::{bail, Context};
 use aoc_runner_derive::{aoc, aoc_generator};
-use eyre::{bail, ContextCompat};
 use itertools::iproduct;
 use once_cell::sync::Lazy;
 use regex::Regex;
@@ -24,9 +24,9 @@ enum Command {
 }
 
 impl FromStr for Command {
-    type Err = eyre::Report;
+    type Err = anyhow::Error;
 
-    fn from_str(s: &str) -> eyre::Result<Self> {
+    fn from_str(s: &str) -> anyhow::Result<Self> {
         let command = match s {
             "turn on" => Command::TurnOn,
             "turn off" => Command::TurnOff,
@@ -46,9 +46,9 @@ struct Instruction {
 }
 
 impl FromStr for Instruction {
-    type Err = eyre::Report;
+    type Err = anyhow::Error;
 
-    fn from_str(s: &str) -> eyre::Result<Self> {
+    fn from_str(s: &str) -> anyhow::Result<Self> {
         let captures = REGEX.captures(s).context("unable to match line: {s}")?;
         let command = captures.name("command").unwrap().as_str().parse()?;
         let sx = captures
@@ -78,7 +78,7 @@ impl FromStr for Instruction {
 }
 
 #[aoc_generator(day6)]
-fn generator(input: &str) -> eyre::Result<Vec<Instruction>> {
+fn generator(input: &str) -> anyhow::Result<Vec<Instruction>> {
     input.lines().map(str::parse).collect()
 }
 
