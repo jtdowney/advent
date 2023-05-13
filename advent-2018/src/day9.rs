@@ -49,11 +49,11 @@ fn play(players: usize, marbles: usize) -> HashMap<usize, usize> {
 #[aoc(day9, part1)]
 fn part1(&(players, marbles): &(usize, usize)) -> Option<usize> {
     let scores = play(players, marbles);
-    scores.values().copied().max()
+    scores.into_values().max()
 }
 
 #[aoc(day9, part2)]
 fn part2(&(players, marbles): &(usize, usize)) -> Option<usize> {
     let scores = play(players, marbles * 100);
-    scores.values().copied().max()
+    scores.into_values().max()
 }

@@ -107,11 +107,11 @@ fn simulate(input: &[Reindeer]) -> HashMap<Reindeer, State> {
 #[aoc(day14, part1)]
 fn part1(input: &[Reindeer]) -> usize {
     let state = simulate(input);
-    state.values().map(|s| s.distance).max().unwrap()
+    state.into_values().map(|s| s.distance).max().unwrap()
 }
 
 #[aoc(day14, part2)]
 fn part2(input: &[Reindeer]) -> usize {
     let state = simulate(input);
-    state.values().map(|s| s.points).max().unwrap()
+    state.into_values().map(|s| s.points).max().unwrap()
 }

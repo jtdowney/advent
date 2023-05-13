@@ -119,7 +119,7 @@ fn part1(input: &[Instruction]) -> i32 {
         pc += 1;
     }
 
-    state.values().max().copied().unwrap_or_default()
+    state.into_values().max().unwrap_or_default()
 }
 
 #[aoc(day8, part2)]
