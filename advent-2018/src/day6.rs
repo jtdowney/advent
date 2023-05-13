@@ -74,8 +74,8 @@ fn part1(input: &[Point]) -> Option<usize> {
         .filter_map(|(_, &point)| point)
         .collect::<HashSet<Point>>();
 
-    grid.values()
-        .filter_map(|&point| point)
+    grid.into_values()
+        .filter_map(|point| point)
         .filter(|point| !edge_points.contains(point))
         .fold(HashMap::new(), |mut acc, point| {
             *acc.entry(point).or_insert(0) += 1;

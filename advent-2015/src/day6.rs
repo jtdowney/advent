@@ -158,6 +158,6 @@ fn part2(input: &[Instruction]) -> usize {
                 acc
             },
         )
-        .values()
+        .into_values()
         .sum()
 }

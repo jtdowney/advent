@@ -178,5 +178,5 @@ fn part1(input: &Program) -> usize {
         },
     );
 
-    state.tape.values().filter(|&v| *v).count()
+    state.tape.into_values().filter(|&v| v).count()
 }

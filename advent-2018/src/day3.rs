@@ -67,8 +67,8 @@ fn part1(input: &[Claim]) -> usize {
 
             acc
         })
-        .values()
-        .filter(|&n| *n > 1)
+        .into_values()
+        .filter(|&n| n > 1)
         .count()
 }
 
@@ -86,10 +86,9 @@ fn part2(input: &[Claim]) -> Option<u16> {
 
             acc
         })
-        .values()
+        .into_values()
         .filter(|claims| claims.len() > 1)
         .flatten()
-        .copied()
         .collect::<HashSet<u16>>();
 
     let all_claims = input.iter().map(|claim| claim.id).collect::<HashSet<u16>>();
