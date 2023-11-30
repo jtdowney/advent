@@ -1,0 +1,17 @@
+[package]
+name = "advent-2020"
+version = "0.1.0"
+authors = ["John Downey <jdowney@gmail.com>"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+aoc-runner = "0.3.0"
+aoc-runner-derive = "0.3.0"
+itertools = "0.9.0"
+lazy_static = "1"
+num-integer = "0.1.44"
+pest = "2"
+pest_derive = "2"
+regex = "1"

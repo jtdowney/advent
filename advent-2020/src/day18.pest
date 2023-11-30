@@ -1,0 +1,9 @@
+WHITESPACE = _{ " " }
+
+Calculation    = _{ SOI ~ Expression ~ EOI }
+  Expression   = { Term ~ (Operation ~ Term)* }
+    Operation  = _{ Add | Multiply }
+      Add      = { "+" }
+      Multiply = { "*" }
+    Term       = _{ Number | "(" ~ Expression ~ ")" }
+    Number     = @{ (ASCII_NONZERO_DIGIT ~ ASCII_DIGIT+ | ASCII_DIGIT) }
