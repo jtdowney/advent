@@ -1,0 +1,16 @@
+[package]
+name = "advent-2022"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+advent-of-code-ocr = "0.1.1"
+aoc-runner = "0.3.0"
+aoc-runner-derive = "0.3.0"
+eyre = "0.6.8"
+itertools = "0.12.0"
+nom = { version = "7.1.1", features = ["alloc"] }
+smallvec = "1.10.0"
+take-until = "0.2.0"
