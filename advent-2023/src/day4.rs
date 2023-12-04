@@ -1,53 +1,48 @@
 use std::collections::HashSet;
 
+use anyhow::Context;
 use aoc_runner_derive::{aoc, aoc_generator};
 
-struct Game {
-    winning_numbers: HashSet<u16>,
-    my_numbers: HashSet<u16>,
-}
-
 #[aoc_generator(day4)]
-fn generator(input: &str) -> anyhow::Result<Vec<Game>> {
+fn generator(input: &str) -> anyhow::Result<Vec<usize>> {
     input
         .lines()
         .map(|line| {
-            let mut iter = line.split_ascii_whitespace().skip(2);
-            let winning_numbers = iter
-                .by_ref()
-                .take_while(|&s| s != "|")
+            let (_, numbers) = line.split_once(':').context("missing colon")?;
+            let (left, right) = numbers.split_once('|').context("missing separator")?;
+            let winning_numbers = left
+                .split_ascii_whitespace()
                 .map(str::parse)
-                .collect::<Result<_, _>>()?;
-            let my_numbers = iter.map(str::parse).collect::<Result<_, _>>()?;
+                .collect::<Result<HashSet<usize>, _>>()?;
+            let my_numbers = right
+                .split_ascii_whitespace()
+                .map(str::parse)
+                .collect::<Result<HashSet<_>, _>>()?;
 
-            Ok(Game {
-                winning_numbers,
-                my_numbers,
-            })
+            let count = (&winning_numbers & &my_numbers).len();
+            Ok(count)
         })
         .collect()
 }
 
 #[aoc(day4, part1)]
-fn part1(input: &[Game]) -> usize {
+fn part1(input: &[usize]) -> usize {
     input
         .iter()
-        .map(|game| {
-            let count = (&game.winning_numbers & &game.my_numbers).len() as u32;
+        .filter_map(|&count| {
             if count > 0 {
-                1 << (count - 1)
+                Some(1 << (count - 1))
             } else {
-                0
+                None
             }
         })
         .sum()
 }
 
 #[aoc(day4, part2)]
-fn part2(input: &[Game]) -> usize {
+fn part2(input: &[usize]) -> usize {
     let mut copies = vec![1; input.len()];
-    for (i, game) in input.iter().enumerate() {
-        let count = (&game.winning_numbers & &game.my_numbers).len();
+    for (i, &count) in input.iter().enumerate() {
         for offset in 1..=count {
             copies[i + offset] += copies[i];
         }
