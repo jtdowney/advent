@@ -36,19 +36,22 @@ impl FromStr for Category {
 }
 
 struct RangeMap {
-    destination_start: u64,
-    source_start: u64,
-    length: u64,
+    destination_start: u32,
+    source_start: u32,
+    length: u32,
 }
 
 impl FromStr for RangeMap {
     type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut parts = s.split_ascii_whitespace().map(str::parse).flatten();
-        let destination_start = parts.next().context("missing destination start")?;
-        let source_start = parts.next().context("missing source start")?;
-        let length = parts.next().context("missing length")?;
+        let parts = s
+            .split_ascii_whitespace()
+            .map(str::parse)
+            .collect::<Result<Vec<_>, _>>()?;
+        let destination_start = parts[0];
+        let source_start = parts[1];
+        let length = parts[2];
 
         Ok(Self {
             destination_start,
@@ -59,7 +62,7 @@ impl FromStr for RangeMap {
 }
 
 impl RangeMap {
-    fn lookup(&self, value: u64) -> Option<u64> {
+    fn lookup(&self, value: u32) -> Option<u32> {
         if value < self.source_start || value >= self.source_start + self.length {
             return None;
         }
@@ -75,16 +78,41 @@ struct CategoryMap {
 }
 
 impl CategoryMap {
-    fn lookup(&self, value: u64) -> u64 {
+    fn map_value(&self, value: u32) -> u32 {
         self.range_maps
             .iter()
             .find_map(|rm| rm.lookup(value))
             .unwrap_or(value)
     }
+
+    fn map_range(&self, (start, length): (u32, u32)) -> Vec<(u32, u32)> {
+        let candidate = self
+            .range_maps
+            .iter()
+            .find(|rm| start >= rm.source_start && start < rm.source_start + rm.length);
+        if let Some(range) = candidate {
+            let current_end = start + length;
+            let range_end = range.source_start + range.length;
+            let dest_start = range.lookup(start).unwrap();
+            if current_end <= range_end {
+                return vec![(dest_start, length)];
+            }
+
+            let overage = current_end - range_end;
+            let dest_length = range_end - start;
+
+            let mut result = vec![(dest_start, dest_length)];
+            let rest = self.map_range((range_end, overage));
+            result.extend_from_slice(&rest);
+            result
+        } else {
+            vec![(start, length)]
+        }
+    }
 }
 
 struct Almanac {
-    seeds: Vec<u64>,
+    seeds: Vec<u32>,
     category_maps: HashMap<Category, CategoryMap>,
 }
 
@@ -103,10 +131,11 @@ fn generator(input: &str) -> anyhow::Result<Almanac> {
             let (label, mapping_lines) = part.split_once('\n').context("splitting label line")?;
             let (source, rest) = label.split_once("-to-").context("splitting label")?;
             let (destination, _) = rest.split_once(' ').context("splitting destination")?;
-            let range_maps = mapping_lines
+            let mut range_maps = mapping_lines
                 .lines()
                 .map(str::parse)
-                .collect::<Result<_, _>>()?;
+                .collect::<Result<Vec<RangeMap>, _>>()?;
+            range_maps.sort_unstable_by_key(|rm| rm.source_start);
 
             acc.insert(
                 source.parse()?,
@@ -126,13 +155,13 @@ fn generator(input: &str) -> anyhow::Result<Almanac> {
 }
 
 #[aoc(day5, part1)]
-fn part1(input: &Almanac) -> Option<u64> {
-    let mut lowest_value = u64::MAX;
+fn part1(input: &Almanac) -> Option<u32> {
+    let mut lowest_value = u32::MAX;
     for value in &input.seeds {
         let mut current = *value;
         let mut source = Category::Seed;
         while let Some(map) = input.category_maps.get(&source) {
-            current = map.lookup(current);
+            current = map.map_value(current);
             source = map.destination;
         }
 
@@ -143,22 +172,30 @@ fn part1(input: &Almanac) -> Option<u64> {
 }
 
 #[aoc(day5, part2)]
-fn part2(input: &Almanac) -> Option<u64> {
-    let mut lowest_value = u64::MAX;
+fn part2(input: &Almanac) -> Option<u32> {
+    let mut lowest_value = u32::MAX;
     let pairs = input.seeds.chunks_exact(2);
     for pair in pairs {
         let start = pair[0];
         let length = pair[1];
-        for value in start..(start + length) {
-            let mut current = value;
-            let mut source = Category::Seed;
-            while let Some(map) = input.category_maps.get(&source) {
-                current = map.lookup(current);
-                source = map.destination;
-            }
 
-            lowest_value = min(lowest_value, current);
+        let mut current = vec![(start, length)];
+        let mut source = Category::Seed;
+        while let Some(map) = input.category_maps.get(&source) {
+            current = current
+                .iter()
+                .flat_map(|&range| map.map_range(range))
+                .collect();
+            source = map.destination;
         }
+
+        let pair_lowest = current
+            .iter()
+            .map(|&(start, _)| start)
+            .min()
+            .unwrap_or(u32::MAX);
+
+        lowest_value = min(lowest_value, pair_lowest);
     }
 
     Some(lowest_value)
