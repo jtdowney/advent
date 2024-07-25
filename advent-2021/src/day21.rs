@@ -101,11 +101,11 @@ fn part2(input: &[u8]) -> usize {
     let mut cache = HashMap::new();
     let player1 = PlayerState {
         score: 0,
-        position: input[0] as u8,
+        position: input[0],
     };
     let player2 = PlayerState {
         score: 0,
-        position: input[1] as u8,
+        position: input[1],
     };
     let (player1_wins, player2_wins) = solve_quantum((player1, player2), &mut cache);
 

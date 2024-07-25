@@ -19,10 +19,10 @@ fn solve(size: usize, input: &[u32]) -> u32 {
 
 #[aoc(day1, part1)]
 fn part1(input: &[u32]) -> u32 {
-    solve(2, &input)
+    solve(2, input)
 }
 
 #[aoc(day1, part2)]
 fn part2(input: &[u32]) -> u32 {
-    solve(3, &input)
+    solve(3, input)
 }

@@ -53,8 +53,8 @@ fn find_mismatched_child(input: &HashMap<String, Node>, name: &str) -> Option<(S
         .children
         .iter()
         .filter_map(|name| Some((name, find_weight(input, name)?)))
-        .fold(HashMap::new(), |mut acc, (name, weight)| {
-            acc.entry(weight).or_insert_with(Vec::new).push(name);
+        .fold(HashMap::<_, Vec<_>>::new(), |mut acc, (name, weight)| {
+            acc.entry(weight).or_default().push(name);
             acc
         })
         .iter()

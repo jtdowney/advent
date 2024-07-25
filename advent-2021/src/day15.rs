@@ -32,7 +32,7 @@ struct SearchEntry {
 
 impl PartialOrd for SearchEntry {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.risk.partial_cmp(&other.risk).map(|o| o.reverse())
+        Some(self.cmp(other))
     }
 }
 

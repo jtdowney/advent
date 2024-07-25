@@ -34,10 +34,10 @@ fn generator(input: &str) -> HashMap<usize, usize> {
 
 #[aoc(day15, part1)]
 fn part1(seen: &HashMap<usize, usize>) -> usize {
-    solve(2020, &seen)
+    solve(2020, seen)
 }
 
 #[aoc(day15, part2)]
 fn part2(seen: &HashMap<usize, usize>) -> usize {
-    solve(30000000, &seen)
+    solve(30000000, seen)
 }

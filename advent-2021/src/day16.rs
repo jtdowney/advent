@@ -37,9 +37,10 @@ enum Operation {
 }
 
 fn hex_digit(input: &str) -> IResult<&str, u8> {
-    map_res(take_while_m_n(2, 2, |c: char| c.is_digit(16)), |s: &str| {
-        u8::from_str_radix(s, 16)
-    })(input)
+    map_res(
+        take_while_m_n(2, 2, |c: char| c.is_ascii_hexdigit()),
+        |s: &str| u8::from_str_radix(s, 16),
+    )(input)
 }
 
 fn hex_string(input: &str) -> IResult<&str, Vec<u8>> {

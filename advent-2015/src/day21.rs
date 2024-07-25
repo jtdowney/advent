@@ -187,7 +187,7 @@ fn part1((player, boss): &(Character, Character)) -> u16 {
 
     iproduct!(WEAPONS, armor_combinations, ring_combinations)
         .map(|(weapon, armor, rings)| {
-            let armor = armor.get(0).copied();
+            let armor = armor.first().copied();
             let rings = rings.iter().copied().collect_vec();
 
             Loadout {
@@ -213,7 +213,7 @@ fn part2((player, boss): &(Character, Character)) -> u16 {
 
     iproduct!(WEAPONS, armor_combinations, ring_combinations)
         .map(|(weapon, armor, rings)| {
-            let armor = armor.get(0).copied();
+            let armor = armor.first().copied();
             let rings = rings.iter().copied().collect_vec();
 
             Loadout {

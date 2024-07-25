@@ -76,12 +76,12 @@ fn part1(input: &[Claim]) -> usize {
 fn part2(input: &[Claim]) -> Option<u16> {
     let repeated = input
         .iter()
-        .fold(HashMap::new(), |mut acc, claim| {
+        .fold(HashMap::<_, Vec<_>>::new(), |mut acc, claim| {
             for point in iproduct!(
                 claim.x..claim.x + claim.width,
                 claim.y..claim.y + claim.height
             ) {
-                acc.entry(point).or_insert_with(Vec::new).push(claim.id);
+                acc.entry(point).or_default().push(claim.id);
             }
 
             acc

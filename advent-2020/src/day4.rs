@@ -46,8 +46,8 @@ fn part2_validator(passport: &Passport) -> bool {
                         let (amount, unit) = value.split_at(index);
                         let amount = amount.parse::<u16>();
                         match (unit, amount) {
-                            ("cm", Ok(v)) => v >= 150 && v <= 193,
-                            ("in", Ok(v)) => v >= 59 && v <= 76,
+                            ("cm", Ok(v)) => (150..=193).contains(&v),
+                            ("in", Ok(v)) => (59..=76).contains(&v),
                             _ => false,
                         }
                     } else {
@@ -91,8 +91,7 @@ fn generator(input: &str) -> Vec<Passport> {
     input
         .split("\n\n")
         .map(|row| {
-            row.trim()
-                .split_whitespace()
+            row.split_whitespace()
                 .fold(Passport::new(), |mut acc, part| {
                     let mut values = part.split(':');
                     let key = values.next().unwrap().to_string();
@@ -106,10 +105,10 @@ fn generator(input: &str) -> Vec<Passport> {
 
 #[aoc(day4, part1)]
 fn part1(passports: &[Passport]) -> usize {
-    solve(&passports, part1_validator)
+    solve(passports, part1_validator)
 }
 
 #[aoc(day4, part2)]
 fn part2(passports: &[Passport]) -> usize {
-    solve(&passports, part2_validator)
+    solve(passports, part2_validator)
 }

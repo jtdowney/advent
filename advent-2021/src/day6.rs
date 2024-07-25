@@ -13,7 +13,7 @@ fn generator(input: &str) -> eyre::Result<Vec<usize>> {
 
 fn solve(input: &[usize], rounds: usize) -> usize {
     let mut population = input.iter().fold([0; 9], |mut acc, &cycle| {
-        acc[cycle as usize] += 1;
+        acc[cycle] += 1;
         acc
     });
 

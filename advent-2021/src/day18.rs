@@ -141,8 +141,8 @@ fn generator(input: &str) -> eyre::Result<Vec<SnailNumber>> {
 #[aoc(day18, part1)]
 fn part1(input: &[SnailNumber]) -> Option<usize> {
     input
-        .to_vec()
-        .into_iter()
+        .iter()
+        .cloned()
         .reduce(|acc, number| acc + number)
         .map(|number| number.magnitude())
 }
@@ -150,8 +150,7 @@ fn part1(input: &[SnailNumber]) -> Option<usize> {
 #[aoc(day18, part2)]
 fn part2(input: &[SnailNumber]) -> Option<usize> {
     input
-        .to_vec()
-        .into_iter()
+        .iter()
         .permutations(2)
         .map(|numbers| {
             let result = numbers[0].clone() + numbers[1].clone();

@@ -33,7 +33,7 @@ impl SeatingArea {
             .map(|&(dx, dy)| (x + dx, y + dy))
             .filter(|n| {
                 self.seats
-                    .get(&n)
+                    .get(n)
                     .map(|&seat| seat == Seat::Occupied)
                     .unwrap_or_default()
             })
@@ -134,10 +134,10 @@ fn generator(input: &str) -> SeatingArea {
 
 #[aoc(day11, part1)]
 fn part1(area: &SeatingArea) -> usize {
-    solve(&area, |prev| Some(prev.step_immedate()))
+    solve(area, |prev| Some(prev.step_immedate()))
 }
 
 #[aoc(day11, part2)]
 fn part2(area: &SeatingArea) -> usize {
-    solve(&area, |prev| Some(prev.step_line_of_sight()))
+    solve(area, |prev| Some(prev.step_line_of_sight()))
 }

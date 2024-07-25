@@ -10,7 +10,7 @@ fn generator(input: &str) -> Result<Vec<u32>, ParseIntError> {
     input.split_whitespace().map(|line| line.parse()).collect()
 }
 
-fn rebalance(banks: &mut Vec<u32>) {
+fn rebalance(banks: &mut [u32]) {
     let banks_len = banks.len();
     let (max_index, _) =
         banks

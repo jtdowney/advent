@@ -12,7 +12,7 @@ fn generator(input: &str) -> Vec<Entry> {
     input
         .lines()
         .map(|line| {
-            let captures = re.captures(&line).unwrap();
+            let captures = re.captures(line).unwrap();
 
             let a = captures[1].parse().unwrap();
             let b = captures[2].parse().unwrap();
