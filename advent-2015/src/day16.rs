@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::LazyLock};
 
 use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
@@ -10,9 +10,8 @@ use nom::{
     sequence::separated_pair,
     Finish, IResult,
 };
-use once_cell::sync::Lazy;
 
-static ATTRIBUTES: Lazy<HashMap<&'static str, usize>> = Lazy::new(|| {
+static ATTRIBUTES: LazyLock<HashMap<&'static str, usize>> = LazyLock::new(|| {
     let mut attributes = HashMap::new();
     attributes.insert("children", 3);
     attributes.insert("cats", 7);

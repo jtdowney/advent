@@ -1,16 +1,16 @@
 use std::{
     collections::{HashMap, HashSet},
     str::FromStr,
+    sync::LazyLock,
 };
 
 use anyhow::Context;
 use aoc_runner_derive::{aoc, aoc_generator};
 use itertools::Itertools;
-use once_cell::sync::Lazy;
 use regex::Regex;
 
-static REGEX: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r"^(?P<start>.+) to (?P<end>.+) = (?P<distance>\d+)$").unwrap());
+static REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^(?P<start>.+) to (?P<end>.+) = (?P<distance>\d+)$").unwrap());
 
 #[derive(Default)]
 struct Input {

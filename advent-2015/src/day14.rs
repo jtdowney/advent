@@ -1,11 +1,10 @@
-use std::{collections::HashMap, str::FromStr};
+use std::{collections::HashMap, str::FromStr, sync::LazyLock};
 
 use anyhow::Context;
 use aoc_runner_derive::{aoc, aoc_generator};
-use once_cell::sync::Lazy;
 use regex::Regex;
 
-static REGEX: Lazy<Regex> = Lazy::new(|| {
+static REGEX: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"^(?P<name>.+) can fly (?P<speed>\d+) km/s for (?P<time>\d+) seconds, but then must rest for (?P<rest>\d+) seconds.$").unwrap()
 });
 

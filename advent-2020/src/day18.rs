@@ -1,4 +1,5 @@
-use lazy_static::lazy_static;
+use std::sync::LazyLock;
+
 use pest::{
     iterators::Pairs,
     prec_climber::{Assoc, Operator, PrecClimber},
@@ -6,14 +7,12 @@ use pest::{
 };
 use pest_derive::Parser;
 
-lazy_static! {
-    static ref PREC_CLIMBER: PrecClimber<Rule> = {
-        PrecClimber::new(vec![
-            Operator::new(Rule::Multiply, Assoc::Left),
-            Operator::new(Rule::Add, Assoc::Left),
-        ])
-    };
-}
+static PREC_CLIMBER: LazyLock<PrecClimber<Rule>> = LazyLock::new(|| {
+    PrecClimber::new(vec![
+        Operator::new(Rule::Multiply, Assoc::Left),
+        Operator::new(Rule::Add, Assoc::Left),
+    ])
+});
 
 #[derive(Parser)]
 #[grammar = "day18.pest"]

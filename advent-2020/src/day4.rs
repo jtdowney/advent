@@ -1,23 +1,22 @@
-use std::collections::{HashMap, HashSet};
-
-use lazy_static::lazy_static;
+use std::{
+    collections::{HashMap, HashSet},
+    sync::LazyLock,
+};
 
 type Passport = HashMap<String, String>;
 
-lazy_static! {
-    static ref REQUIRED_KEYS: HashSet<&'static str> = {
-        ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
-            .iter()
-            .copied()
-            .collect::<HashSet<&'static str>>()
-    };
-    static ref EYE_COLORS: HashSet<&'static str> = {
-        ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]
-            .iter()
-            .copied()
-            .collect::<HashSet<&'static str>>()
-    };
-}
+static REQUIRED_KEYS: LazyLock<HashSet<&'static str>> = LazyLock::new(|| {
+    ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
+        .iter()
+        .copied()
+        .collect::<HashSet<&'static str>>()
+});
+static EYE_COLORS: LazyLock<HashSet<&'static str>> = LazyLock::new(|| {
+    ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]
+        .iter()
+        .copied()
+        .collect::<HashSet<&'static str>>()
+});
 
 fn validate_year(year: &str, minimum: u16, maximum: u16) -> bool {
     year.parse::<u16>()

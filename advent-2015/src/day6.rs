@@ -1,15 +1,15 @@
 use std::{
     collections::{HashMap, HashSet},
     str::FromStr,
+    sync::LazyLock,
 };
 
 use anyhow::{bail, Context};
 use aoc_runner_derive::{aoc, aoc_generator};
 use itertools::iproduct;
-use once_cell::sync::Lazy;
 use regex::Regex;
 
-static REGEX: Lazy<Regex> = Lazy::new(|| {
+static REGEX: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"^(?P<command>turn on|turn off|toggle) (?P<sx>\d+),(?P<sy>\d+) through (?P<ex>\d+),(?P<ey>\d+)$")
 	.unwrap()
 });

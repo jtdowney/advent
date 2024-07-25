@@ -1,15 +1,15 @@
 use std::{
     collections::{HashMap, HashSet},
     str::FromStr,
+    sync::LazyLock,
 };
 
 use anyhow::Context;
 use aoc_runner_derive::{aoc, aoc_generator};
 use itertools::Itertools;
-use once_cell::sync::Lazy;
 use regex::Regex;
 
-static REGEX: Lazy<Regex> = Lazy::new(|| {
+static REGEX: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"^(?P<actor>.+) would (?P<action>gain|lose) (?P<units>\d+) happiness units by sitting next to (?P<target>.+).$").unwrap()
 });
 
