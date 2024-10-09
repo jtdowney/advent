@@ -97,7 +97,7 @@ fn part1(input: &[Instruction]) -> usize {
                 let &(sx, sy) = start;
                 let &(ex, ey) = end;
 
-                for point in iproduct!((sx..=ex), (sy..=ey)) {
+                for point in iproduct!(sx..=ex, sy..=ey) {
                     match command {
                         Command::TurnOn => {
                             acc.insert(point);
@@ -136,7 +136,7 @@ fn part2(input: &[Instruction]) -> usize {
                 let &(sx, sy) = start;
                 let &(ex, ey) = end;
 
-                for point in iproduct!((sx..=ex), (sy..=ey)) {
+                for point in iproduct!(sx..=ex, sy..=ey) {
                     match command {
                         Command::TurnOn => {
                             *acc.entry(point).or_default() += 1;

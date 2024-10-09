@@ -65,7 +65,7 @@ fn part1(input: &[Instruction]) -> i32 {
 
 #[aoc(day10, part2)]
 fn part2(input: &[Instruction]) -> String {
-    let screen = iproduct!((0..6), (0..40)).zip(execute(input)).fold(
+    let screen = iproduct!(0..6, 0..40).zip(execute(input)).fold(
         String::with_capacity(6 * 40 + 6),
         |mut acc, ((_, x), sprite)| {
             if x == 0 {

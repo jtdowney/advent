@@ -23,13 +23,13 @@ fn generator(input: &str) -> HashSet<Point> {
 }
 
 fn neighbors((x, y): Point) -> impl Iterator<Item = Point> {
-    iproduct!((-1..=1), (-1..=1))
+    iproduct!(-1..=1, -1..=1)
         .filter(|&(dx, dy)| !(dx == 0 && dy == 0))
         .map(move |(dx, dy)| (x + dx, y + dy))
 }
 
 fn step(lights: &HashSet<Point>) -> HashSet<Point> {
-    iproduct!((0..100), (0..100))
+    iproduct!(0..100, 0..100)
         .filter(|&point @ (x, y)| {
             let neighbors = neighbors(point).filter(|&n| lights.contains(&n)).count();
             if lights.contains(&(x, y)) {

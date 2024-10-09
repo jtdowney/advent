@@ -23,7 +23,7 @@ fn enhance(image: Image, enhancement: &[bool]) -> impl Iterator<Item = Image> + 
             .minmax_by_key(|(_, y)| y)
             .into_option()?;
 
-        let pixels = iproduct!(((startx - 1)..=(endx + 1)), ((starty - 1)..=(endy + 1)))
+        let pixels = iproduct!((startx - 1)..=(endx + 1), (starty - 1)..=(endy + 1))
             .map(|(x, y)| {
                 let lookup = [
                     (-1, -1),

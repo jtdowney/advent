@@ -66,7 +66,7 @@ fn generator(input: &str) -> eyre::Result<Target> {
 
 #[aoc(day17, part1)]
 fn part1(target: &Target) -> Option<i16> {
-    iproduct!((1..=target.x2), (target.y1..=(1 - target.y1)))
+    iproduct!(1..=target.x2, target.y1..=(1 - target.y1))
         .filter_map(|starting_velocity| {
             simulate(starting_velocity)
                 .scan(i16::MIN, |prev_max_y, position @ (_, y)| {
@@ -82,7 +82,7 @@ fn part1(target: &Target) -> Option<i16> {
 
 #[aoc(day17, part2)]
 fn part2(target: &Target) -> usize {
-    iproduct!((1..=target.x2), target.y1..=(1 - target.y1))
+    iproduct!(1..=target.x2, target.y1..=(1 - target.y1))
         .filter(|&starting_velocity| {
             simulate(starting_velocity)
                 .take_while(|&position| !target.below(position))
