@@ -37,6 +37,16 @@ fn is_safe(report: &Report) -> bool {
     true
 }
 
+fn permutations(report: &Report) -> impl Iterator<Item = Report> + '_ {
+    (0..report.len())
+        .map(move |i| {
+            let mut reduced = report.clone();
+            reduced.remove(i);
+            reduced
+        })
+        .chain([report.clone()])
+}
+
 #[aoc(day2, part1)]
 fn part1(input: &[Report]) -> usize {
     input.iter().filter(|report| is_safe(report)).count()
@@ -46,16 +56,6 @@ fn part1(input: &[Report]) -> usize {
 fn part2(input: &[Report]) -> usize {
     input
         .iter()
-        .filter(|&report| {
-            if is_safe(report) {
-                return true;
-            }
-
-            (0..report.len()).any(|i| {
-                let mut reduced = report.clone();
-                reduced.remove(i);
-                is_safe(&reduced)
-            })
-        })
+        .filter(|&report| permutations(report).any(|reduced| is_safe(&reduced)))
         .count()
 }
