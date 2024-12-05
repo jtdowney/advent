@@ -1,20 +1,74 @@
 use std::{
+    cmp::Ordering,
     collections::{HashMap, HashSet},
-    iter,
 };
 
 use anyhow::Context;
 use aoc_runner_derive::{aoc, aoc_generator};
-use itertools::Itertools;
 
-#[derive(Default)]
-struct Rules {
-    pages_after: HashMap<u32, HashSet<u32>>,
-    pages_before: HashMap<u32, HashSet<u32>>,
+type Rules = HashMap<u32, HashSet<u32>>;
+
+#[derive(Clone, Copy, Eq, PartialEq)]
+struct Page {
+    value: u32,
+    rules: &'static Rules,
+}
+
+impl Ord for Page {
+    fn cmp(&self, other: &Self) -> Ordering {
+        let before = self
+            .rules
+            .get(&self.value)
+            .map_or(false, |set| set.contains(&other.value));
+        if before {
+            Ordering::Less
+        } else {
+            Ordering::Greater
+        }
+    }
+}
+
+impl PartialOrd for Page {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+struct Candidate {
+    pages: Vec<u32>,
+    rules: &'static Rules,
+}
+
+impl Candidate {
+    fn is_sorted(&self) -> bool {
+        self.pages().is_sorted()
+    }
+
+    fn sorted(&self) -> Self {
+        let mut pages = self.pages().collect::<Vec<_>>();
+        pages.sort();
+
+        Self {
+            pages: pages.into_iter().map(|page| page.value).collect(),
+            rules: self.rules,
+        }
+    }
+
+    fn pages(&self) -> impl Iterator<Item = Page> + '_ {
+        self.pages.iter().map(move |&value| Page {
+            value,
+            rules: self.rules,
+        })
+    }
+
+    fn midpoint(&self) -> u32 {
+        let mid = self.pages.len() / 2;
+        self.pages[mid]
+    }
 }
 
 #[aoc_generator(day5)]
-fn generator(input: &str) -> anyhow::Result<(Rules, Vec<Vec<u32>>)> {
+fn generator(input: &str) -> anyhow::Result<Vec<Candidate>> {
     let (rules_input, candidates_input) = input.split_once("\n\n").context("missing split")?;
     let rules = rules_input
         .lines()
@@ -22,74 +76,42 @@ fn generator(input: &str) -> anyhow::Result<(Rules, Vec<Vec<u32>>)> {
             let (before, after) = line.split_once('|').context("missing split")?;
             let before = before.parse().context("failed to parse before")?;
             let after = after.parse().context("failed to parse after")?;
-            acc.pages_after.entry(before).or_default().insert(after);
-            acc.pages_before.entry(after).or_default().insert(before);
+            acc.entry(before).or_default().insert(after);
             anyhow::Ok(acc)
         })?;
+    let rules = Box::leak(Box::new(rules));
 
     let candidates = candidates_input
         .lines()
-        .map(|line| line.split(',').map(|page| page.parse::<u32>()).collect())
+        .map(|line| {
+            let pages = line
+                .split(',')
+                .map(|page| page.parse::<u32>())
+                .collect::<Result<Vec<_>, _>>()?;
+            anyhow::Ok(Candidate { pages, rules })
+        })
         .collect::<Result<_, _>>()?;
 
-    Ok((rules, candidates))
-}
-
-fn is_ordered_page(before: u32, after: u32, rules: &Rules) -> bool {
-    rules
-        .pages_after
-        .get(&before)
-        .map_or(false, |set| set.contains(&after))
-        && rules
-            .pages_before
-            .get(&after)
-            .map_or(false, |set| set.contains(&before))
-}
-
-fn is_ordered_candidate(pages: &[u32], rules: &Rules) -> bool {
-    pages
-        .iter()
-        .tuple_windows()
-        .all(|(&before, &after)| is_ordered_page(before, after, rules))
+    Ok(candidates)
 }
 
 #[aoc(day5, part1)]
-fn part1((rules, candidates): &(Rules, Vec<Vec<u32>>)) -> u32 {
-    candidates
+fn part1(input: &[Candidate]) -> u32 {
+    input
         .iter()
-        .filter(|pages| is_ordered_candidate(pages, rules))
-        .map(|pages| {
-            let mid = pages.len() / 2;
-            pages[mid]
-        })
+        .filter(|candidate| candidate.is_sorted())
+        .map(Candidate::midpoint)
         .sum()
 }
 
 #[aoc(day5, part2)]
-fn part2((rules, candidates): &(Rules, Vec<Vec<u32>>)) -> Option<u32> {
-    fn permutations<'a>(pages: &'a [u32], rules: &'a Rules) -> impl Iterator<Item = Vec<u32>> + 'a {
-        let pages = pages.to_vec();
-        iter::successors(Some(pages), |pages| {
-            let (i, _) = pages
-                .iter()
-                .tuple_windows()
-                .find_position(|(&before, &after)| !is_ordered_page(before, after, rules))?;
-
-            let mut next = pages.clone();
-            next.swap(i, i + 1);
-
-            Some(next)
-        })
-    }
-
-    candidates
+fn part2(input: &[Candidate]) -> u32 {
+    input
         .iter()
-        .filter(|pages| !is_ordered_candidate(pages, rules))
-        .map(|pages| {
-            let next =
-                permutations(pages, rules).find(|pages| is_ordered_candidate(pages, rules))?;
-            let mid = next.len() / 2;
-            Some(next[mid])
+        .filter(|candidate| !candidate.is_sorted())
+        .map(|candidate| {
+            let next = candidate.sorted();
+            next.midpoint()
         })
         .sum()
 }
