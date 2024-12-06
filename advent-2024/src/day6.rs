@@ -50,30 +50,43 @@ enum Cell {
     Obstruction,
 }
 
+impl From<char> for Cell {
+    fn from(c: char) -> Self {
+        match c {
+            '.' | '^' => Cell::Free,
+            '#' => Cell::Obstruction,
+            _ => unimplemented!("Unexpected character: {}", c),
+        }
+    }
+}
+
 #[derive(Clone, Debug, Default)]
 struct Simulation {
     cells: HashMap<Point, Cell>,
     visited: HashSet<(Point, Direction)>,
-    current: Point,
+    position: Point,
     direction: Direction,
     looping: bool,
-    outside: bool,
 }
 
 impl Simulation {
-    fn step(&mut self) {
-        self.looping = !self.visited.insert((self.current, self.direction));
-        let next = self.current + self.direction;
+    fn step(&mut self) -> bool {
+        self.looping = !self.visited.insert((self.position, self.direction));
+        let next = self.position + self.direction;
         match self.cells.get(&next) {
-            Some(Cell::Free) => self.current = next,
+            Some(Cell::Free) => self.position = next,
             Some(Cell::Obstruction) => self.direction = self.direction.next(),
-            None => self.outside = true,
+            None => return true,
         }
+
+        false
     }
 
     fn run(&mut self) {
-        while !self.outside && !self.looping {
-            self.step();
+        while !self.step() {
+            if self.looping {
+                break;
+            }
         }
     }
 }
@@ -89,20 +102,11 @@ fn generator(input: &str) -> Simulation {
                 .map(move |(x, c)| (Point(x as i32, y as i32), c))
         })
         .fold(Simulation::default(), |mut acc, (point, c)| {
-            match c {
-                '.' => {
-                    acc.cells.insert(point, Cell::Free);
-                }
-                '#' => {
-                    acc.cells.insert(point, Cell::Obstruction);
-                }
-                '^' => {
-                    acc.cells.insert(point, Cell::Free);
-                    acc.current = point;
-                }
-                _ => unimplemented!("Unexpected character: {}", c),
+            if c == '^' {
+                acc.position = point;
             }
 
+            acc.cells.insert(point, Cell::from(c));
             acc
         })
 }
@@ -126,7 +130,7 @@ fn part2(input: &Simulation) -> usize {
     let candidates = original
         .visited
         .iter()
-        .filter(|&&(point, _)| point != input.current)
+        .filter(|&&(point, _)| point != input.position)
         .map(|&(point, _)| point)
         .collect::<HashSet<_>>();
     candidates
