@@ -36,6 +36,10 @@ fn is_valid(eq: &Equation, concat: bool) -> bool {
 
     let mut remaining = eq.remaining.clone();
     let left = remaining.pop().unwrap();
+    if left > eq.target {
+        return false;
+    }
+
     let right = remaining.pop().unwrap();
 
     let mut a_remaining = remaining.clone();
