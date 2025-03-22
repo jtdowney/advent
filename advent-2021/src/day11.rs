@@ -38,7 +38,7 @@ fn step(state: &mut HashMap<Point, u8>) -> usize {
     let mut flashed = HashSet::new();
     let mut search = state
         .iter()
-        .filter(|(_, &e)| e > 9)
+        .filter(|&(_, &e)| e > 9)
         .map(|(p, _)| p)
         .cloned()
         .collect::<Vec<Point>>();

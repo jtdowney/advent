@@ -87,7 +87,7 @@ fn part2(input: &Grid) -> Option<usize> {
     let mut steps = input
         .map
         .iter()
-        .filter(|(_, &height)| height == b'a')
+        .filter(|&(_, &height)| height == b'a')
         .filter_map(|(&start, _)| find_shortest_path(input, start))
         .collect::<Vec<_>>();
     steps.sort_unstable();

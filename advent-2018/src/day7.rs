@@ -129,16 +129,16 @@ fn part2(input: &Input) -> Option<usize> {
                 _ => continue,
             }
 
-            if let Some(&step) = ready.iter().min() {
+            match ready.iter().min() { Some(&step) => {
                 ready.remove(&step);
                 let completion_time = t + completion_time(step);
                 *worker = Some(Work {
                     step,
                     completion_time,
                 });
-            } else {
+            } _ => {
                 *worker = None;
-            }
+            }}
         }
 
         completed.len() == max_steps

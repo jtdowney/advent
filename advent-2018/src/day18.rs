@@ -45,7 +45,7 @@ impl Display for Grid {
 
 impl Grid {
     fn neighbors(&self, x: usize, y: usize) -> impl Iterator<Item = Cell> + '_ {
-        let Grid(ref cells) = self;
+        let Grid(cells) = self;
 
         [
             (-1, -1),

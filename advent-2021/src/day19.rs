@@ -139,13 +139,13 @@ fn generator(input: &str) -> eyre::Result<Input> {
                 continue;
             }
 
-            if let Some(transform) = scanners[i].find_transform(&scanners[j]) {
+            match scanners[i].find_transform(&scanners[j]) { Some(transform) => {
                 let other_transform = transforms[&j];
                 transforms.insert(i, other_transform * transform);
                 break;
-            } else {
+            } _ => {
                 ignore.insert((i, j));
-            }
+            }}
         }
 
         if !transforms.contains_key(&i) {

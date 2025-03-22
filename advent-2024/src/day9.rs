@@ -91,7 +91,7 @@ fn compact2(disk: &Disk, freelist: &Freelist) -> Disk {
     while let Some((position, block)) = disk.pop_last() {
         let (free_position, free_length) = match freelist
             .iter()
-            .find(|(&free_position, &length)| free_position < position && length >= block.length)
+            .find(|&(&free_position, &length)| free_position < position && length >= block.length)
         {
             Some((&position, &length)) => (position, length),
             None => {

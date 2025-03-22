@@ -24,7 +24,7 @@ fn part1(input: &[String]) -> eyre::Result<u32> {
     let gamma = input
         .iter()
         .map(|counts| {
-            let (&value, _) = counts.iter().max_by_key(|(_, &v)| v).unwrap();
+            let (&value, _) = counts.iter().max_by_key(|&(_, &v)| v).unwrap();
             value
         })
         .collect::<String>();
@@ -33,7 +33,7 @@ fn part1(input: &[String]) -> eyre::Result<u32> {
     let epsilon = input
         .iter()
         .map(|counts| {
-            let (&value, _) = counts.iter().min_by_key(|(_, &v)| v).unwrap();
+            let (&value, _) = counts.iter().min_by_key(|&(_, &v)| v).unwrap();
             value
         })
         .collect::<String>();
@@ -60,7 +60,7 @@ fn part2(input: &[String]) -> eyre::Result<u32> {
             let pick = if counts[&'0'] == counts[&'1'] {
                 '1'
             } else {
-                let (&pick, _) = counts.iter().max_by_key(|(_, &v)| v).unwrap();
+                let (&pick, _) = counts.iter().max_by_key(|&(_, &v)| v).unwrap();
                 pick
             };
             candidates.retain(|candidate| candidate[digit] == pick);
@@ -81,7 +81,7 @@ fn part2(input: &[String]) -> eyre::Result<u32> {
             let pick = if counts[&'0'] == counts[&'1'] {
                 '0'
             } else {
-                let (&pick, _) = counts.iter().min_by_key(|(_, &v)| v).unwrap();
+                let (&pick, _) = counts.iter().min_by_key(|&(_, &v)| v).unwrap();
                 pick
             };
             candidates.retain(|candidate| candidate[digit] == pick);
