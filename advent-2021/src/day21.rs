@@ -34,7 +34,7 @@ fn part1(input: &[u8]) -> Option<usize> {
     [0, 1]
         .into_iter()
         .cycle()
-        .zip((0..).chunks(3).into_iter())
+        .zip(&(0..).chunks(3))
         .scan(state, |state, (player, moves)| {
             for round in moves {
                 let roll = ((round % 100) + 1) as u8;

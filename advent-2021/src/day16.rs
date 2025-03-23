@@ -1,13 +1,12 @@
 use eyre::eyre;
 use nom::{
-    bits,
+    Finish, IResult, bits,
     bits::complete::{tag, take},
     branch::alt,
     bytes::complete::take_while_m_n,
     combinator::{map, map_res, verify},
-    multi::{length_count, many1, many_till},
+    multi::{length_count, many_till, many1},
     sequence::preceded,
-    Finish, IResult,
 };
 
 type BitSlice<'a> = (&'a [u8], usize);
@@ -83,7 +82,7 @@ fn variable_length_value(input: BitSlice) -> IResult<BitSlice, u64> {
         .rev()
         .enumerate()
         .fold(0, |acc, (offset, &nibble)| {
-            acc | (nibble as u64) << (offset * 4)
+            acc | ((nibble as u64) << (offset * 4))
         });
 
     Ok((input, value))
@@ -210,29 +209,17 @@ fn evaluate(packet: &Packet) -> u64 {
             Operation::GreaterThan => {
                 let left = evaluate(&packets[0]);
                 let right = evaluate(&packets[1]);
-                if left > right {
-                    1
-                } else {
-                    0
-                }
+                if left > right { 1 } else { 0 }
             }
             Operation::LessThan => {
                 let left = evaluate(&packets[0]);
                 let right = evaluate(&packets[1]);
-                if left < right {
-                    1
-                } else {
-                    0
-                }
+                if left < right { 1 } else { 0 }
             }
             Operation::EqualTo => {
                 let left = evaluate(&packets[0]);
                 let right = evaluate(&packets[1]);
-                if left == right {
-                    1
-                } else {
-                    0
-                }
+                if left == right { 1 } else { 0 }
             }
         },
     }

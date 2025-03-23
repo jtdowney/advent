@@ -19,7 +19,7 @@ impl Ord for Page {
         let before = self
             .rules
             .get(&self.value)
-            .map_or(false, |set| set.contains(&other.value));
+            .is_some_and(|set| set.contains(&other.value));
         if before {
             Ordering::Less
         } else {

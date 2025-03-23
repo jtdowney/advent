@@ -60,7 +60,7 @@ fn find_mismatched_child(input: &HashMap<String, Node>, name: &str) -> Option<(S
         .iter()
         .combinations(2)
         .find_map(|parts| {
-            let (&(&aw, ref af), &(&bw, ref bf)) = (&parts[0], &parts[1]);
+            let (&(&aw, af), &(&bw, bf)) = (&parts[0], &parts[1]);
             if af.len() == 1 {
                 Some((af[0].to_string(), aw - bw))
             } else if bf.len() == 1 {

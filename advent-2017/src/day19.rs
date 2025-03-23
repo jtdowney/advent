@@ -66,7 +66,7 @@ fn neighbors((x, y): Point) -> impl Iterator<Item = (Point, Direction)> {
     })
 }
 
-impl<'a> State<'a> {
+impl State<'_> {
     fn walk(&mut self) {
         loop {
             let (x, y) = self.point;
