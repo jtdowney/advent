@@ -2,16 +2,15 @@ use std::sync::LazyLock;
 
 use pest::{
     iterators::Pairs,
-    prec_climber::{Assoc, Operator, PrecClimber},
+    pratt_parser::{Op, PrattParser},
     Parser,
 };
 use pest_derive::Parser;
 
-static PREC_CLIMBER: LazyLock<PrecClimber<Rule>> = LazyLock::new(|| {
-    PrecClimber::new(vec![
-        Operator::new(Rule::Multiply, Assoc::Left),
-        Operator::new(Rule::Add, Assoc::Left),
-    ])
+static PRATT_PARSER: LazyLock<PrattParser<Rule>> = LazyLock::new(|| {
+    PrattParser::new()
+        .op(Op::infix(Rule::Multiply, pest::pratt_parser::Assoc::Left))
+        .op(Op::infix(Rule::Add, pest::pratt_parser::Assoc::Left))
 });
 
 #[derive(Parser)]
@@ -58,15 +57,14 @@ fn part1_evaluate(expression: Pairs<Rule>) -> i64 {
 }
 
 fn part2_evaluate(expression: Pairs<Rule>) -> i64 {
-    PREC_CLIMBER.climb(
-        expression,
-        |pair| match pair.as_rule() {
+    PRATT_PARSER
+        .map_primary(|pair| match pair.as_rule() {
             Rule::Number => pair.as_str().parse().unwrap(),
             Rule::Expression => part2_evaluate(pair.into_inner()),
             _ => unreachable!(),
-        },
-        |lhs, op, rhs| calculate(op.as_rule(), lhs, rhs),
-    )
+        })
+        .map_infix(|lhs, op, rhs| calculate(op.as_rule(), lhs, rhs))
+        .parse(expression)
 }
 
 #[aoc(day18, part1)]
@@ -85,8 +83,9 @@ fn part2(input: &str) -> i64 {
     input
         .lines()
         .map(|line| {
-            let expression = InputParser::parse(Rule::Calculation, line).unwrap();
-            part2_evaluate(expression)
+            let mut expression = InputParser::parse(Rule::Calculation, line).unwrap();
+            let expr = expression.next().unwrap();
+            part2_evaluate(expr.into_inner())
         })
         .sum()
 }
