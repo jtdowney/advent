@@ -37,7 +37,8 @@ fn claim(input: &str) -> IResult<&str, Claim> {
             width,
             height,
         },
-    ).parse(input)
+    )
+    .parse(input)
 }
 
 #[aoc_generator(day3)]

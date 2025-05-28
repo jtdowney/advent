@@ -2,16 +2,16 @@ use std::{collections::HashMap, iter};
 
 use aoc_runner_derive::{aoc, aoc_generator};
 use eyre::eyre;
-use itertools::{iproduct, Itertools};
+use itertools::{Itertools, iproduct};
 use nom::{
+    Finish, IResult, Parser,
     branch::alt,
     bytes::complete::tag,
     character::complete::{alpha1, u32},
     combinator::map,
     multi::separated_list1,
-    Finish, IResult, Parser,
 };
-use smallvec::{smallvec, SmallVec};
+use smallvec::{SmallVec, smallvec};
 
 const START: &str = "AA";
 
@@ -39,7 +39,8 @@ fn parse_valve(input: &str) -> IResult<&str, (String, u32, Vec<String>)> {
             tunnels,
         ),
         |(_, name, _, flow_rate, _, connections)| (String::from(name), flow_rate, connections),
-    ).parse(input)
+    )
+    .parse(input)
 }
 
 fn compute_distances(names: &[String], connections: &[Vec<String>]) -> HashMap<(usize, usize), u8> {

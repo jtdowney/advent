@@ -3,10 +3,10 @@ use std::{collections::HashMap, str::FromStr};
 use anyhow::bail;
 use aoc_runner_derive::{aoc, aoc_generator};
 use nom::{
+    IResult, Parser,
     branch::alt,
     bytes::complete::tag,
     character::complete::{alpha1, space1, u16},
-    IResult, Parser,
 };
 
 fn variable(input: &str) -> IResult<&str, Expression> {

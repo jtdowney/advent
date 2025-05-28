@@ -74,7 +74,8 @@ fn rule(input: &str) -> IResult<&str, Rule> {
             next_direction,
             next_state,
         },
-    ).parse(input)
+    )
+    .parse(input)
 }
 
 fn instructions(input: &str) -> IResult<&str, [Instruction; 2]> {
@@ -87,10 +88,7 @@ fn instructions(input: &str) -> IResult<&str, [Instruction; 2]> {
 
     map(
         (
-            terminated(
-                preceded(tag("In state "), anychar),
-                (tag(":"), newline),
-            ),
+            terminated(preceded(tag("In state "), anychar), (tag(":"), newline)),
             terminated(
                 preceded((space1, tag("If the current value is ")), value),
                 (tag(":"), newline),
@@ -105,7 +103,8 @@ fn instructions(input: &str) -> IResult<&str, [Instruction; 2]> {
         |(state, value1, rule1, value2, rule2)| {
             [((state, value1), rule1), ((state, value2), rule2)]
         },
-    ).parse(input)
+    )
+    .parse(input)
 }
 
 fn program(input: &str) -> IResult<&str, Program> {
@@ -131,17 +130,17 @@ fn program(input: &str) -> IResult<&str, Program> {
                 (tag(" steps."), newline),
             ),
             newline,
-            map(
-                separated_list1((newline, newline), instructions),
-                |rules| rules.into_iter().flatten().collect(),
-            ),
+            map(separated_list1((newline, newline), instructions), |rules| {
+                rules.into_iter().flatten().collect()
+            }),
         ),
         |(initial_state, diagnostic_steps, _, rules)| Program {
             initial_state,
             diagnostic_steps,
             rules,
         },
-    ).parse(input)
+    )
+    .parse(input)
 }
 
 #[aoc_generator(day25)]

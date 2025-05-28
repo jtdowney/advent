@@ -38,7 +38,8 @@ fn hex_digit(input: &str) -> IResult<&str, u8> {
     map_res(
         take_while_m_n(2, 2, |c: char| c.is_ascii_hexdigit()),
         |s: &str| u8::from_str_radix(s, 16),
-    ).parse(input)
+    )
+    .parse(input)
 }
 
 fn hex_string(input: &str) -> IResult<&str, Vec<u8>> {
@@ -66,13 +67,13 @@ fn header(input: BitSlice) -> IResult<BitSlice, PacketHeader> {
 fn variable_length_value(input: BitSlice) -> IResult<BitSlice, u64> {
     let mut nibbles = Vec::new();
     let mut remaining = input;
-    
+
     loop {
         let (input, continue_bit) = take::<_, u8, _, _>(1usize).parse(remaining)?;
         let (input, nibble) = take::<_, u8, _, _>(4usize).parse(input)?;
         nibbles.push(nibble);
         remaining = input;
-        
+
         if continue_bit == 0 {
             break;
         }
@@ -105,7 +106,7 @@ fn consumed_length(a: BitSlice, b: BitSlice) -> usize {
 
 fn operator_subpackets(input: BitSlice) -> IResult<BitSlice, Vec<Packet>> {
     let (input, length_type) = take::<_, u8, _, _>(1usize).parse(input)?;
-    
+
     if length_type == 0 {
         // Subpackets by total length
         let (input, length) = take::<_, u16, _, _>(15usize).parse(input)?;
@@ -129,13 +130,13 @@ fn operator_subpackets(input: BitSlice) -> IResult<BitSlice, Vec<Packet>> {
         let (input, count) = take::<_, u16, _, _>(11usize).parse(input)?;
         let mut packets = vec![];
         let mut remaining_input = input;
-        
+
         for _ in 0..count {
             let (next_input, packet) = packet(remaining_input)?;
             packets.push(packet);
             remaining_input = next_input;
         }
-        
+
         Ok((remaining_input, packets))
     }
 }

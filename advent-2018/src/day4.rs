@@ -28,7 +28,7 @@ impl FromStr for Event {
         use nom::{
             branch::alt,
             bytes::complete::tag,
-            character::complete::{char, space1, u16, u8},
+            character::complete::{char, space1, u8, u16},
             combinator::map,
             error::Error,
             sequence::{delimited, preceded},
@@ -68,7 +68,8 @@ impl FromStr for Event {
             },
         );
 
-        let (_, event) = parser.parse(s)
+        let (_, event) = parser
+            .parse(s)
             .finish()
             .map_err(|e| anyhow!("unable to parse event: {}", e))?;
         Ok(event)

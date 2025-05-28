@@ -39,22 +39,14 @@ fn instruction(input: &str) -> IResult<&str, Instruction> {
         (tag("cpy "), operand, tag(" "), operand),
         |(_, op1, _, op2)| Instruction::Copy(op1, op2),
     );
-    let increment = map((tag("inc "), operand), |(_, op)| {
-        Instruction::Increment(op)
-    });
-    let decrement = map((tag("dec "), operand), |(_, op)| {
-        Instruction::Decrement(op)
-    });
+    let increment = map((tag("inc "), operand), |(_, op)| Instruction::Increment(op));
+    let decrement = map((tag("dec "), operand), |(_, op)| Instruction::Decrement(op));
     let jump_not_zero = map(
         (tag("jnz "), operand, tag(" "), operand),
         |(_, op1, _, op2)| Instruction::JumpNotZero(op1, op2),
     );
-    let toggle = map((tag("tgl "), operand), |(_, op)| {
-        Instruction::Toggle(op)
-    });
-    let out = map((tag("out "), operand), |(_, op)| {
-        Instruction::Out(op)
-    });
+    let toggle = map((tag("tgl "), operand), |(_, op)| Instruction::Toggle(op));
+    let out = map((tag("out "), operand), |(_, op)| Instruction::Out(op));
 
     alt((copy, increment, decrement, jump_not_zero, toggle, out)).parse(input)
 }

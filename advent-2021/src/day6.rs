@@ -1,4 +1,4 @@
-use eyre::{eyre, ContextCompat};
+use eyre::{ContextCompat, eyre};
 
 #[aoc_generator(day6)]
 fn generator(input: &str) -> eyre::Result<Vec<usize>> {

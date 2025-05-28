@@ -65,13 +65,13 @@ fn scramble(input: &str, operations: &[Operation]) -> String {
 }
 
 fn operation(input: &str) -> IResult<&str, Operation> {
+    use Operation::*;
     use nom::{
         branch::alt,
         bytes::complete::tag,
         character::complete::{anychar, u32},
         combinator::map,
     };
-    use Operation::*;
 
     let swap_position = map(
         (tag("swap position "), u32, tag(" with position "), u32),
@@ -81,9 +81,7 @@ fn operation(input: &str) -> IResult<&str, Operation> {
         (tag("swap letter "), anychar, tag(" with letter "), anychar),
         |(_, x, _, y)| SwapLetter(x, y),
     );
-    let rotate_left = map((tag("rotate left "), u32), |(_, x)| {
-        RotateLeft(x as usize)
-    });
+    let rotate_left = map((tag("rotate left "), u32), |(_, x)| RotateLeft(x as usize));
     let rotate_right = map((tag("rotate right "), u32), |(_, x)| {
         RotateRight(x as usize)
     });
@@ -107,7 +105,8 @@ fn operation(input: &str) -> IResult<&str, Operation> {
         rotate_based_on,
         reverse,
         move_position,
-    )).parse(input)
+    ))
+    .parse(input)
 }
 
 #[aoc_generator(day21)]

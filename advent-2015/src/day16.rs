@@ -3,12 +3,12 @@ use std::{collections::HashMap, sync::LazyLock};
 use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
 use nom::{
+    Finish, IResult, Parser,
     bytes::complete::tag,
     character::complete::{alpha1, space1, u16},
     combinator::map,
     multi::separated_list1,
     sequence::separated_pair,
-    Finish, IResult, Parser,
 };
 
 static ATTRIBUTES: LazyLock<HashMap<&'static str, usize>> = LazyLock::new(|| {
@@ -34,7 +34,8 @@ fn properties(input: &str) -> IResult<&str, HashMap<String, usize>> {
             tag(": "),
             map(u16, usize::from),
         ),
-    ).parse(input)?;
+    )
+    .parse(input)?;
 
     Ok((input, list.into_iter().collect()))
 }

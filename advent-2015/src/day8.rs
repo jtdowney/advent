@@ -1,13 +1,13 @@
 use anyhow::bail;
 use aoc_runner_derive::{aoc, aoc_generator};
 use nom::{
+    IResult, Parser,
     branch::alt,
     bytes::complete::{is_not, tag, take_while_m_n},
     character::complete::char,
     combinator::{map, map_res, value, verify},
     multi::fold_many0,
     sequence::{delimited, preceded},
-    IResult, Parser,
 };
 
 #[derive(Debug, Clone, Copy)]
@@ -21,7 +21,8 @@ fn hex_encoded(input: &str) -> IResult<&str, u8> {
     map_res(
         take_while_m_n(2, 2, |c: char| c.is_ascii_hexdigit()),
         |value| u8::from_str_radix(value, 16),
-    ).parse(input)
+    )
+    .parse(input)
 }
 
 fn escaped(input: &str) -> IResult<&str, u8> {
@@ -32,7 +33,8 @@ fn escaped(input: &str) -> IResult<&str, u8> {
             value(b'"', char('"')),
             value(b'\\', char('\\')),
         )),
-    ).parse(input)
+    )
+    .parse(input)
 }
 
 fn literal(input: &str) -> IResult<&str, &str> {
@@ -44,7 +46,8 @@ fn fragment(input: &str) -> IResult<&str, StringFragment> {
     alt((
         map(literal, StringFragment::Literal),
         map(escaped, StringFragment::EscapedChar),
-    )).parse(input)
+    ))
+    .parse(input)
 }
 
 fn string(input: &str) -> IResult<&str, Vec<u8>> {
@@ -58,7 +61,8 @@ fn string(input: &str) -> IResult<&str, Vec<u8>> {
             acc
         }),
         tag("\""),
-    ).parse(input)
+    )
+    .parse(input)
 }
 
 #[aoc_generator(day8)]

@@ -22,11 +22,7 @@ fn part1(input: &[(u32, u32)]) -> u32 {
     input.iter().fold(
         u32::MIN,
         |acc, &(start, end)| {
-            if start > acc {
-                acc
-            } else {
-                acc.max(end + 1)
-            }
+            if start > acc { acc } else { acc.max(end + 1) }
         },
     )
 }

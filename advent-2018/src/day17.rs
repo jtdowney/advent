@@ -70,7 +70,8 @@ impl FromStr for Scan {
             |(x, _, y)| Scan::Vertical(x, y),
         );
 
-        alt((horizontal, vertical)).parse(s)
+        alt((horizontal, vertical))
+            .parse(s)
             .map(|(_, scan)| scan)
             .map_err(|e| anyhow!("unable to parse scan: {}", e))
     }

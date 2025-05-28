@@ -35,7 +35,8 @@ impl FromStr for Particle {
                     char('>'),
                 ),
                 |(x, y)| Vector { x, y },
-            ).parse(input)
+            )
+            .parse(input)
         }
 
         let mut parser = map(
@@ -47,7 +48,8 @@ impl FromStr for Particle {
             |(position, velocity)| Particle { position, velocity },
         );
 
-        parser.parse(s)
+        parser
+            .parse(s)
             .map(|(_, particle)| particle)
             .map_err(|e| anyhow!("Invalid particle: {}", e))
     }

@@ -1,4 +1,4 @@
-use eyre::{eyre, ContextCompat};
+use eyre::{ContextCompat, eyre};
 use itertools::Itertools;
 
 #[aoc_generator(day7)]

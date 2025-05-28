@@ -4,21 +4,23 @@ use nom::{Finish, IResult, Parser};
 
 fn marker(input: &[u8]) -> IResult<&[u8], (usize, usize)> {
     use nom::{
-        bytes::complete::tag,
-        character::complete::u32,
-        combinator::map,
-        sequence::delimited,
+        bytes::complete::tag, character::complete::u32, combinator::map, sequence::delimited,
     };
 
     map(
-        delimited(tag("("), |input| {
-            let (input, length) = u32(input)?;
-            let (input, _) = tag("x")(input)?;
-            let (input, count) = u32(input)?;
-            Ok((input, (length, count)))
-        }, tag(")")),
+        delimited(
+            tag("("),
+            |input| {
+                let (input, length) = u32(input)?;
+                let (input, _) = tag("x")(input)?;
+                let (input, count) = u32(input)?;
+                Ok((input, (length, count)))
+            },
+            tag(")"),
+        ),
         |(length, count)| (length as usize, count as usize),
-    ).parse(input)
+    )
+    .parse(input)
 }
 
 fn decompress(mut input: &[u8]) -> anyhow::Result<Vec<u8>> {

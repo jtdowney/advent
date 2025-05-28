@@ -4,13 +4,13 @@ use aoc_runner_derive::{aoc, aoc_generator};
 use eyre::bail;
 use itertools::Itertools;
 use nom::{
+    IResult, Parser,
     branch::alt,
     bytes::complete::tag,
-    character::complete::{line_ending, u64, u8},
+    character::complete::{line_ending, u8, u64},
     combinator::{map, value},
     multi::separated_list1,
     sequence::preceded,
-    IResult, Parser,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -44,7 +44,8 @@ fn parse_items(input: &str) -> IResult<&str, VecDeque<u64>> {
     map(
         preceded(tag("  Starting items: "), separated_list1(tag(", "), u64)),
         VecDeque::from,
-    ).parse(input)
+    )
+    .parse(input)
 }
 
 fn parse_operation(input: &str) -> IResult<&str, Operation> {
@@ -54,7 +55,8 @@ fn parse_operation(input: &str) -> IResult<&str, Operation> {
     preceded(
         tag("  Operation: new = "),
         alt((parse_add, parse_multiply, parse_double)),
-    ).parse(input)
+    )
+    .parse(input)
 }
 
 fn parse_test(input: &str) -> IResult<&str, u64> {
@@ -66,7 +68,8 @@ fn parse_throw<'a>(input: &'a str, result: &'static str) -> IResult<&'a str, usi
     let (input, _) = tag(result).parse(input)?;
     map(preceded(tag(": throw to monkey "), u64), |target| {
         target as usize
-    }).parse(input)
+    })
+    .parse(input)
 }
 
 fn parse_monkey(input: &str) -> IResult<&str, Monkey> {

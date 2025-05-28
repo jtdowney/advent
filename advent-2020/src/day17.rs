@@ -1,6 +1,6 @@
 use std::{collections::HashSet, iter};
 
-use itertools::{iproduct, Itertools};
+use itertools::{Itertools, iproduct};
 
 const STEPS: usize = 7;
 

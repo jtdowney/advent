@@ -74,10 +74,7 @@ impl Record {
             .flatten()
             .copied()
             .collect();
-        let chunks = iter::repeat_n(&self.chunks, 5)
-            .flatten()
-            .copied()
-            .collect();
+        let chunks = iter::repeat_n(&self.chunks, 5).flatten().copied().collect();
         Self { conditions, chunks }
     }
 }

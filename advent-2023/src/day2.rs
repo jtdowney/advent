@@ -21,6 +21,7 @@ impl FromStr for Game {
 
     fn from_str(input: &str) -> Result<Self, Self::Err> {
         use nom::{
+            Finish, Parser,
             branch::alt,
             bytes::complete::tag,
             character::complete::u32,
@@ -28,7 +29,6 @@ impl FromStr for Game {
             error::Error,
             multi::separated_list1,
             sequence::{pair, preceded, terminated},
-            Finish, Parser,
         };
 
         map(
@@ -61,7 +61,8 @@ impl FromStr for Game {
                 ),
             ),
             |(id, draws)| Game { id, draws },
-        ).parse(input)
+        )
+        .parse(input)
         .finish()
         .map(|(_, game)| game)
         .map_err(|e| anyhow!("error parsing game: {:?}", e))

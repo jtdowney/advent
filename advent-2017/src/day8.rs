@@ -72,7 +72,8 @@ fn instruction(input: &str) -> IResult<&str, Instruction> {
             condition_register,
             condition,
         },
-    ).parse(input)
+    )
+    .parse(input)
 }
 
 #[aoc_generator(day8)]

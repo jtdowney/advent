@@ -2,13 +2,13 @@ use std::collections::HashSet;
 
 use aoc_runner_derive::{aoc, aoc_generator};
 use eyre::eyre;
-use itertools::{iproduct, Itertools};
+use itertools::{Itertools, iproduct};
 use nom::{
+    Finish, IResult, Parser,
     bytes::complete::tag,
     character::complete::{char, i16, line_ending},
     multi::separated_list1,
     sequence::separated_pair,
-    Finish, IResult, Parser,
 };
 
 type Point = (i16, i16);

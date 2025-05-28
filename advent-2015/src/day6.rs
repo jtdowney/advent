@@ -4,7 +4,7 @@ use std::{
     sync::LazyLock,
 };
 
-use anyhow::{bail, Context};
+use anyhow::{Context, bail};
 use aoc_runner_derive::{aoc, aoc_generator};
 use itertools::iproduct;
 use regex::Regex;

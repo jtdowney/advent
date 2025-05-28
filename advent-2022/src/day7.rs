@@ -3,12 +3,12 @@ use std::{collections::HashMap, path::PathBuf};
 use aoc_runner_derive::{aoc, aoc_generator};
 use eyre::bail;
 use nom::{
+    Finish, IResult, Parser,
     branch::alt,
     bytes::complete::{tag, take_while1},
     character::complete::{space1, u32},
     combinator::{map, value},
     sequence::{preceded, separated_pair},
-    Finish, IResult, Parser,
 };
 
 #[derive(Clone)]
@@ -23,7 +23,8 @@ fn parse_path(input: &str) -> IResult<&str, String> {
     map(
         take_while1(|c: char| c.is_ascii_alphabetic() || c == '.' || c == '/'),
         String::from,
-    ).parse(input)
+    )
+    .parse(input)
 }
 
 fn parse_command(input: &str) -> IResult<&str, Token> {

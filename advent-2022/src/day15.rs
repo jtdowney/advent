@@ -2,14 +2,14 @@ use std::collections::{HashMap, HashSet};
 
 use aoc_runner_derive::{aoc, aoc_generator};
 use eyre::eyre;
-use itertools::{iproduct, Itertools};
+use itertools::{Itertools, iproduct};
 use nom::{
+    Finish, IResult, Parser,
     bytes::complete::tag,
     character::complete::{i64, line_ending},
     combinator::map,
     multi::separated_list1,
     sequence::{preceded, separated_pair},
-    Finish, IResult, Parser,
 };
 
 const TARGET_ROW: i64 = 2000000;
@@ -48,7 +48,8 @@ fn parse_point(input: &str) -> IResult<&str, Point> {
             preceded(tag("y="), i64),
         ),
         |(x, y)| Point(x, y),
-    ).parse(input)
+    )
+    .parse(input)
 }
 
 fn parse_input(input: &str) -> IResult<&str, HashMap<Point, Point>> {

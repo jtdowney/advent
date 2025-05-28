@@ -56,28 +56,18 @@ impl Particle {
 
 fn vector(input: &str) -> IResult<&str, Vector> {
     use nom::{
-        bytes::complete::tag,
-        character::complete::i64,
-        combinator::map,
-        sequence::delimited,
+        bytes::complete::tag, character::complete::i64, combinator::map, sequence::delimited,
     };
 
     map(
-        delimited(
-            tag("<"),
-            (i64, tag(","), i64, tag(","), i64),
-            tag(">"),
-        ),
+        delimited(tag("<"), (i64, tag(","), i64, tag(","), i64), tag(">")),
         |(x, _, y, _, z)| Vector { x, y, z },
-    ).parse(input)
+    )
+    .parse(input)
 }
 
 fn particle(input: &str) -> IResult<&str, Particle> {
-    use nom::{
-        bytes::complete::tag,
-        combinator::map,
-        sequence::preceded,
-    };
+    use nom::{bytes::complete::tag, combinator::map, sequence::preceded};
 
     map(
         (
@@ -92,7 +82,8 @@ fn particle(input: &str) -> IResult<&str, Particle> {
             velocity,
             acceleration,
         },
-    ).parse(input)
+    )
+    .parse(input)
 }
 
 #[aoc_generator(day20)]

@@ -2,7 +2,7 @@ use std::collections::{BTreeSet, HashSet, VecDeque};
 
 use anyhow::bail;
 use aoc_runner_derive::{aoc, aoc_generator};
-use itertools::{iproduct, Itertools};
+use itertools::{Itertools, iproduct};
 use regex::Regex;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]

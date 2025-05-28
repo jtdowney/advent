@@ -1,6 +1,6 @@
 use anyhow::Context;
 use aoc_runner_derive::{aoc, aoc_generator};
-use itertools::{iproduct, Itertools};
+use itertools::{Itertools, iproduct};
 
 #[derive(Debug, Clone, Copy)]
 enum Item {

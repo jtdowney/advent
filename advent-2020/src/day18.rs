@@ -1,9 +1,9 @@
 use std::sync::LazyLock;
 
 use pest::{
+    Parser,
     iterators::Pairs,
     pratt_parser::{Op, PrattParser},
-    Parser,
 };
 use pest_derive::Parser;
 

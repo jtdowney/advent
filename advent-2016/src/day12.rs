@@ -23,7 +23,8 @@ fn register(input: &str) -> IResult<&str, Register> {
     use nom::{branch::alt, character::complete::char, combinator::map};
     map(alt((char('a'), char('b'), char('c'), char('d'))), |c| {
         Register(c)
-    }).parse(input)
+    })
+    .parse(input)
 }
 
 fn operand(input: &str) -> IResult<&str, Operand> {
@@ -32,9 +33,7 @@ fn operand(input: &str) -> IResult<&str, Operand> {
 }
 
 fn instruction(input: &str) -> IResult<&str, Instruction> {
-    use nom::{
-        branch::alt, bytes::complete::tag, character::complete::i32, combinator::map,
-    };
+    use nom::{branch::alt, bytes::complete::tag, character::complete::i32, combinator::map};
 
     let copy = map(
         (tag("cpy "), operand, tag(" "), register),

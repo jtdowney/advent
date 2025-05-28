@@ -1,6 +1,6 @@
 use std::{collections::HashMap, str::FromStr};
 
-use anyhow::{anyhow, Context};
+use anyhow::{Context, anyhow};
 use aoc_runner_derive::{aoc, aoc_generator};
 
 #[derive(Clone, Copy)]
@@ -68,13 +68,13 @@ impl FromStr for Rule {
 
     fn from_str(input: &str) -> Result<Self, Self::Err> {
         use nom::{
+            Finish, IResult, Parser,
             branch::alt,
             bytes::complete::take_till1,
             character::complete::{alpha1, anychar, char, u32},
             combinator::{map, map_res},
             multi::separated_list1,
             sequence::{delimited, pair, separated_pair},
-            Finish, IResult, Parser,
         };
 
         fn condition(input: &str) -> IResult<&str, Condition> {
@@ -85,7 +85,8 @@ impl FromStr for Rule {
                     '>' => Condition::GreaterThan(property, value),
                     _ => unreachable!(),
                 },
-            ).parse(input)
+            )
+            .parse(input)
         }
 
         fn conditional_action(input: &str) -> IResult<&str, (Condition, Action)> {
@@ -98,7 +99,8 @@ impl FromStr for Rule {
                 map(map_res(alpha1, str::parse), |action| {
                     (Condition::Immediate, action)
                 }),
-            )).parse(input)
+            ))
+            .parse(input)
         }
 
         map(
@@ -111,7 +113,8 @@ impl FromStr for Rule {
                 ),
             ),
             |(name, workflow)| Rule { name, workflow },
-        ).parse(input)
+        )
+        .parse(input)
         .finish()
         .map(|(_, o)| o)
         .map_err(|e| anyhow!("parsing rule: {:?}", e))
@@ -127,12 +130,12 @@ impl FromStr for Part {
 
     fn from_str(input: &str) -> Result<Self, Self::Err> {
         use nom::{
+            Finish, Parser,
             character::complete::{anychar, char, u32},
             combinator::map,
             error::Error,
             multi::separated_list1,
             sequence::{delimited, separated_pair},
-            Finish, Parser,
         };
 
         map(
@@ -144,7 +147,8 @@ impl FromStr for Part {
             |pairs| Part {
                 properties: pairs.into_iter().collect(),
             },
-        ).parse(input)
+        )
+        .parse(input)
         .finish()
         .map(|(_, o)| o)
         .map_err(|e| anyhow!("parsing part: {:?}", e))

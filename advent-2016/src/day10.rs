@@ -38,13 +38,12 @@ fn destination(input: &str) -> IResult<&str, Destination> {
     alt((
         map(preceded(tag("bot "), bot), Destination::Bot),
         map(preceded(tag("output "), u32), Destination::Output),
-    )).parse(input)
+    ))
+    .parse(input)
 }
 
 fn instruction(input: &str) -> IResult<&str, Instruction> {
-    use nom::{
-        branch::alt, bytes::complete::tag, character::complete::u32, combinator::map,
-    };
+    use nom::{branch::alt, bytes::complete::tag, character::complete::u32, combinator::map};
 
     let mut microchip = map(u32, Microchip);
     let pickup = map(

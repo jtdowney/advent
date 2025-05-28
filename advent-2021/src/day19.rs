@@ -1,6 +1,6 @@
 use eyre::ContextCompat;
-use itertools::{iproduct, Itertools};
-use nalgebra::{point, Matrix4, Point3, Transform3, Vector3};
+use itertools::{Itertools, iproduct};
+use nalgebra::{Matrix4, Point3, Transform3, Vector3, point};
 use std::collections::{HashMap, HashSet, VecDeque};
 
 type Point = Point3<f64>;
@@ -139,13 +139,16 @@ fn generator(input: &str) -> eyre::Result<Input> {
                 continue;
             }
 
-            match scanners[i].find_transform(&scanners[j]) { Some(transform) => {
-                let other_transform = transforms[&j];
-                transforms.insert(i, other_transform * transform);
-                break;
-            } _ => {
-                ignore.insert((i, j));
-            }}
+            match scanners[i].find_transform(&scanners[j]) {
+                Some(transform) => {
+                    let other_transform = transforms[&j];
+                    transforms.insert(i, other_transform * transform);
+                    break;
+                }
+                _ => {
+                    ignore.insert((i, j));
+                }
+            }
         }
 
         if !transforms.contains_key(&i) {

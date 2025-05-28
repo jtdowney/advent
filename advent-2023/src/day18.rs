@@ -45,11 +45,11 @@ impl FromStr for Instruction {
 
     fn from_str(input: &str) -> Result<Self, Self::Err> {
         use nom::{
+            Finish, IResult, Parser,
             bytes::complete::{tag, take},
             character::complete::{anychar, i64, space1},
             combinator::{map, map_res},
             sequence::{delimited, pair},
-            Finish, IResult, Parser,
         };
 
         fn direction(input: &str) -> IResult<&str, Direction> {
@@ -61,7 +61,13 @@ impl FromStr for Instruction {
         }
 
         map(
-            (direction, space1, i64, space1, delimited(tag("(#"), pair(hex_number, direction), tag(")"))),
+            (
+                direction,
+                space1,
+                i64,
+                space1,
+                delimited(tag("(#"), pair(hex_number, direction), tag(")")),
+            ),
             |(direction, _, length, _, (length2, direction2))| {
                 Instruction((
                     DigPlan { direction, length },
@@ -71,7 +77,8 @@ impl FromStr for Instruction {
                     },
                 ))
             },
-        ).parse(input)
+        )
+        .parse(input)
         .finish()
         .map(|(_, o)| o)
         .map_err(|e| anyhow!("parse error: {:?}", e))

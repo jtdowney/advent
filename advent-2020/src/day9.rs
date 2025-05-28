@@ -21,11 +21,7 @@ fn part1(input: &[u64]) -> u64 {
                 .iter()
                 .combinations(2)
                 .any(|numbers| numbers.iter().copied().sum::<u64>() == sum);
-            if found {
-                None
-            } else {
-                Some(sum)
-            }
+            if found { None } else { Some(sum) }
         })
         .unwrap()
 }

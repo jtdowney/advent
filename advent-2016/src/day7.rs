@@ -81,7 +81,8 @@ fn address_part(input: &str) -> IResult<&str, String> {
     map(
         take_while1(|c: char| c.is_ascii_alphabetic() && !(c == '[' || c == ']')),
         String::from,
-    ).parse(input)
+    )
+    .parse(input)
 }
 
 fn normal_part(input: &str) -> IResult<&str, AddressPart> {
@@ -94,14 +95,16 @@ fn hypernet_part(input: &str) -> IResult<&str, AddressPart> {
     map(
         delimited(tag("["), address_part, tag("]")),
         AddressPart::Hypernet,
-    ).parse(input)
+    )
+    .parse(input)
 }
 
 fn address(input: &str) -> IResult<&str, Address> {
     use nom::{branch::alt, combinator::map, multi::many1};
     map(many1(alt((normal_part, hypernet_part))), |parts| Address {
         parts,
-    }).parse(input)
+    })
+    .parse(input)
 }
 
 #[aoc_generator(day7)]

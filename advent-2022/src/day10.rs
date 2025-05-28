@@ -3,14 +3,14 @@ use aoc_runner_derive::{aoc, aoc_generator};
 use eyre::bail;
 use itertools::iproduct;
 use nom::{
+    IResult, Parser,
     branch::alt,
     bytes::complete::tag,
     character::complete::{i32, space1},
     combinator::{map, value},
     sequence::preceded,
-    IResult, Parser,
 };
-use smallvec::{smallvec, SmallVec};
+use smallvec::{SmallVec, smallvec};
 
 #[derive(Copy, Clone)]
 enum Instruction {
@@ -20,10 +20,7 @@ enum Instruction {
 
 fn parse_instruction(input: &str) -> IResult<&str, Instruction> {
     let parse_noop = value(Instruction::Noop, tag("noop"));
-    let parse_addx = map(
-        preceded((tag("addx"), space1), i32),
-        Instruction::AddX,
-    );
+    let parse_addx = map(preceded((tag("addx"), space1), i32), Instruction::AddX);
 
     alt((parse_noop, parse_addx)).parse(input)
 }

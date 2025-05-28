@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use anyhow::{bail, Context};
+use anyhow::{Context, bail};
 use aoc_runner_derive::{aoc, aoc_generator};
 
 const START_PROGRAM: &[char; 16] = &[

@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use anyhow::{anyhow, Context};
+use anyhow::{Context, anyhow};
 use aoc_runner_derive::{aoc, aoc_generator};
 use nom::Parser;
 
@@ -37,12 +37,12 @@ impl FromStr for Instruction {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         use nom::{
+            Finish,
             branch::alt,
             bytes::complete::tag,
             character::complete::{space1, u32},
             combinator::{map, value},
             error::Error,
-            Finish,
         };
 
         let mut instruction = map(
@@ -75,7 +75,8 @@ impl FromStr for Instruction {
             |(opcode, _, a, _, b, _, c)| Instruction(opcode, a as usize, b as usize, c as usize),
         );
 
-        instruction.parse(s)
+        instruction
+            .parse(s)
             .finish()
             .map(|(_, instruction)| instruction)
             .map_err(|e| anyhow!("unable to parse instruction: {:?}", e))

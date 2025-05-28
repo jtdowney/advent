@@ -1,6 +1,6 @@
 use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
-use itertools::{iproduct, Itertools};
+use itertools::{Itertools, iproduct};
 use nom::{Finish, IResult, Parser};
 
 const WIDTH: usize = 50;
@@ -14,10 +14,7 @@ enum Instruction {
 
 fn instruction(input: &str) -> IResult<&str, Instruction> {
     use nom::{
-        branch::alt,
-        bytes::complete::tag,
-        character::complete::u8,
-        combinator::map,
+        branch::alt, bytes::complete::tag, character::complete::u8, combinator::map,
         sequence::preceded,
     };
 

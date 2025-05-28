@@ -3,11 +3,11 @@ use std::{collections::HashSet, iter};
 use aoc_runner_derive::{aoc, aoc_generator};
 use eyre::bail;
 use nom::{
+    IResult, Parser,
     branch::alt,
     character::complete::{char, space1, u32},
     combinator::{map, value},
     sequence::separated_pair,
-    IResult, Parser,
 };
 
 #[derive(Copy, Clone, Debug)]
@@ -45,7 +45,8 @@ fn parse_direction(input: &str) -> IResult<&str, Direction> {
         value(Direction::Down, char('D')),
         value(Direction::Left, char('L')),
         value(Direction::Right, char('R')),
-    )).parse(input)
+    ))
+    .parse(input)
 }
 
 fn parse_instruction(input: &str) -> IResult<&str, Instruction> {
@@ -55,7 +56,8 @@ fn parse_instruction(input: &str) -> IResult<&str, Instruction> {
             direction,
             count: count as usize,
         },
-    ).parse(input)
+    )
+    .parse(input)
 }
 
 #[aoc_generator(day9)]

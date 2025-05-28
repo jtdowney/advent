@@ -4,12 +4,12 @@ use anyhow::bail;
 use aoc_runner_derive::{aoc, aoc_generator};
 use itertools::iproduct;
 use nom::{
+    Finish, IResult, Parser,
     bytes::complete::tag,
     character::complete::{alpha1, i16},
     combinator::map,
     multi::separated_list1,
     sequence::separated_pair,
-    Finish, IResult, Parser,
 };
 
 type Ingrediants = HashMap<String, HashMap<String, isize>>;
@@ -18,7 +18,8 @@ fn properties(input: &str) -> IResult<&str, HashMap<String, isize>> {
     let (input, list) = separated_list1(
         tag(", "),
         separated_pair(map(alpha1, str::to_string), tag(" "), map(i16, isize::from)),
-    ).parse(input)?;
+    )
+    .parse(input)?;
 
     Ok((input, list.into_iter().collect()))
 }

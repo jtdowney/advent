@@ -3,7 +3,7 @@ use std::{
     iter,
 };
 
-use anyhow::{bail, Context};
+use anyhow::{Context, bail};
 use aoc_runner_derive::{aoc, aoc_generator};
 use itertools::izip;
 

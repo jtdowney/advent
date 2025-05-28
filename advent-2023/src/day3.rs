@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use aoc_runner_derive::{aoc, aoc_generator};
-use itertools::{iproduct, Itertools};
+use itertools::{Itertools, iproduct};
 
 type Point = (i16, i16);
 type Grid = HashMap<Point, char>;

@@ -1,4 +1,4 @@
-use eyre::{bail, ContextCompat};
+use eyre::{ContextCompat, bail};
 use std::{collections::HashSet, fmt::Write};
 
 type Point = (i16, i16);
