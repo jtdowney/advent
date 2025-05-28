@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
-use nom::{Finish, IResult};
+use nom::{Finish, IResult, Parser};
 
 #[derive(Clone, Copy, Debug)]
 enum Operand {
@@ -27,7 +27,7 @@ fn operand(input: &str) -> IResult<&str, Operand> {
 
     let literal = map(i64, Operand::Literal);
     let register = map(anychar, Operand::Register);
-    alt((literal, register))(input)
+    alt((literal, register)).parse(input)
 }
 
 fn instruction(input: &str) -> IResult<&str, Instruction> {
@@ -56,7 +56,7 @@ fn instruction(input: &str) -> IResult<&str, Instruction> {
         |(o1, o2)| Instruction::Jnz(o1, o2),
     );
 
-    alt((set, sub, mul, jnz))(input)
+    alt((set, sub, mul, jnz)).parse(input)
 }
 
 #[aoc_generator(day23)]

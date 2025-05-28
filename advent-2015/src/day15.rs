@@ -9,7 +9,7 @@ use nom::{
     combinator::map,
     multi::separated_list1,
     sequence::separated_pair,
-    Finish, IResult,
+    Finish, IResult, Parser,
 };
 
 type Ingrediants = HashMap<String, HashMap<String, isize>>;
@@ -18,14 +18,14 @@ fn properties(input: &str) -> IResult<&str, HashMap<String, isize>> {
     let (input, list) = separated_list1(
         tag(", "),
         separated_pair(map(alpha1, str::to_string), tag(" "), map(i16, isize::from)),
-    )(input)?;
+    ).parse(input)?;
 
     Ok((input, list.into_iter().collect()))
 }
 
 fn ingrediant(input: &str) -> IResult<&str, (String, HashMap<String, isize>)> {
-    let (input, name) = map(alpha1, str::to_string)(input)?;
-    let (input, _) = tag(": ")(input)?;
+    let (input, name) = map(alpha1, str::to_string).parse(input)?;
+    let (input, _) = tag(": ").parse(input)?;
     let (input, properties) = properties(input)?;
     Ok((input, (name, properties)))
 }

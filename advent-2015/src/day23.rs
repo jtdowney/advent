@@ -2,7 +2,7 @@ use std::ops::{Index, IndexMut};
 
 use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
-use nom::{Finish, IResult};
+use nom::{Finish, IResult, Parser};
 
 type Register = char;
 
@@ -20,14 +20,14 @@ fn register(input: &str) -> IResult<&str, Register> {
     use nom::character::complete::alpha1;
     use nom::combinator::map_opt;
 
-    map_opt(alpha1, |s: &str| s.chars().next())(input)
+    map_opt(alpha1, |s: &str| s.chars().next()).parse(input)
 }
 
 fn instruction(input: &str) -> IResult<&str, Instruction> {
     use nom::branch::alt;
     use nom::bytes::complete::tag;
     use nom::combinator::map;
-    use nom::sequence::{preceded, tuple};
+    use nom::sequence::preceded;
 
     let offset = nom::character::complete::i32;
     let half = map(preceded(tag("hlf "), register), Instruction::Half);
@@ -35,15 +35,15 @@ fn instruction(input: &str) -> IResult<&str, Instruction> {
     let increment = map(preceded(tag("inc "), register), Instruction::Increment);
     let jump = map(preceded(tag("jmp "), offset), Instruction::Jump);
     let jump_if_even = map(
-        tuple((tag("jie "), register, tag(", "), offset)),
+        (tag("jie "), register, tag(", "), offset),
         |(_, r, _, o)| Instruction::JumpIfEven(r, o),
     );
     let jump_if_one = map(
-        tuple((tag("jio "), register, tag(", "), offset)),
+        (tag("jio "), register, tag(", "), offset),
         |(_, r, _, o)| Instruction::JumpIfOne(r, o),
     );
 
-    alt((half, triple, increment, jump, jump_if_even, jump_if_one))(input)
+    alt((half, triple, increment, jump, jump_if_even, jump_if_one)).parse(input)
 }
 
 #[aoc_generator(day23)]

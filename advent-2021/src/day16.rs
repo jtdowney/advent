@@ -1,12 +1,11 @@
 use eyre::eyre;
 use nom::{
-    Finish, IResult, bits,
-    bits::complete::{tag, take},
+    Finish, IResult, Parser,
+    bits::{bits, complete::take},
     branch::alt,
     bytes::complete::take_while_m_n,
-    combinator::{map, map_res, verify},
-    multi::{length_count, many_till, many1},
-    sequence::preceded,
+    combinator::{map_res, verify},
+    multi::many1,
 };
 
 type BitSlice<'a> = (&'a [u8], usize);
@@ -39,11 +38,11 @@ fn hex_digit(input: &str) -> IResult<&str, u8> {
     map_res(
         take_while_m_n(2, 2, |c: char| c.is_ascii_hexdigit()),
         |s: &str| u8::from_str_radix(s, 16),
-    )(input)
+    ).parse(input)
 }
 
 fn hex_string(input: &str) -> IResult<&str, Vec<u8>> {
-    many1(hex_digit)(input)
+    many1(hex_digit).parse(input)
 }
 
 struct PacketHeader {
@@ -52,8 +51,8 @@ struct PacketHeader {
 }
 
 fn header(input: BitSlice) -> IResult<BitSlice, PacketHeader> {
-    let (input, version) = take(3usize)(input)?;
-    let (input, packet_type) = take(3usize)(input)?;
+    let (input, version) = take(3usize).parse(input)?;
+    let (input, packet_type) = take(3usize).parse(input)?;
 
     Ok((
         input,
@@ -65,17 +64,19 @@ fn header(input: BitSlice) -> IResult<BitSlice, PacketHeader> {
 }
 
 fn variable_length_value(input: BitSlice) -> IResult<BitSlice, u64> {
-    let nibble = |input| take::<_, u8, _, _>(4usize)(input);
-    let (input, nibbles) = map(
-        many_till(
-            preceded(tag(1, 1usize), nibble),
-            preceded(tag(0, 1usize), nibble),
-        ),
-        |(mut parts, part)| {
-            parts.push(part);
-            parts
-        },
-    )(input)?;
+    let mut nibbles = Vec::new();
+    let mut remaining = input;
+    
+    loop {
+        let (input, continue_bit) = take::<_, u8, _, _>(1usize).parse(remaining)?;
+        let (input, nibble) = take::<_, u8, _, _>(4usize).parse(input)?;
+        nibbles.push(nibble);
+        remaining = input;
+        
+        if continue_bit == 0 {
+            break;
+        }
+    }
 
     let value = nibbles
         .iter()
@@ -85,11 +86,11 @@ fn variable_length_value(input: BitSlice) -> IResult<BitSlice, u64> {
             acc | ((nibble as u64) << (offset * 4))
         });
 
-    Ok((input, value))
+    Ok((remaining, value))
 }
 
 fn literal_packet(input: BitSlice) -> IResult<BitSlice, Packet> {
-    let (input, header) = verify(header, |header| header.packet_type == 4)(input)?;
+    let (input, header) = verify(header, |header| header.packet_type == 4).parse(input)?;
     let (input, value) = variable_length_value(input)?;
 
     let version = header.version;
@@ -103,8 +104,12 @@ fn consumed_length(a: BitSlice, b: BitSlice) -> usize {
 }
 
 fn operator_subpackets(input: BitSlice) -> IResult<BitSlice, Vec<Packet>> {
-    let subpackets_by_length = preceded(tag(0, 1usize), |input| {
-        let (input, length) = take(15usize)(input)?;
+    let (input, length_type) = take::<_, u8, _, _>(1usize).parse(input)?;
+    
+    if length_type == 0 {
+        // Subpackets by total length
+        let (input, length) = take::<_, u16, _, _>(15usize).parse(input)?;
+        let length = length as usize;
 
         let mut packets = vec![];
         let mut remaining_input = input;
@@ -119,18 +124,24 @@ fn operator_subpackets(input: BitSlice) -> IResult<BitSlice, Vec<Packet>> {
         }
 
         Ok((remaining_input, packets))
-    });
-
-    let subpackets_by_count = preceded(
-        tag(1, 1usize),
-        length_count(take::<_, u16, _, _>(11usize), packet),
-    );
-
-    alt((subpackets_by_length, subpackets_by_count))(input)
+    } else {
+        // Subpackets by count
+        let (input, count) = take::<_, u16, _, _>(11usize).parse(input)?;
+        let mut packets = vec![];
+        let mut remaining_input = input;
+        
+        for _ in 0..count {
+            let (next_input, packet) = packet(remaining_input)?;
+            packets.push(packet);
+            remaining_input = next_input;
+        }
+        
+        Ok((remaining_input, packets))
+    }
 }
 
 fn operator_packet(input: BitSlice) -> IResult<BitSlice, Packet> {
-    let (input, header) = verify(header, |header| header.packet_type != 4)(input)?;
+    let (input, header) = verify(header, |header| header.packet_type != 4).parse(input)?;
     let (input, packets) = operator_subpackets(input)?;
 
     let version = header.version;
@@ -156,11 +167,11 @@ fn operator_packet(input: BitSlice) -> IResult<BitSlice, Packet> {
 }
 
 fn packet(input: BitSlice) -> IResult<BitSlice, Packet> {
-    alt((literal_packet, operator_packet))(input)
+    alt((literal_packet, operator_packet)).parse(input)
 }
 
 fn parse_packet(input: &[u8]) -> IResult<&[u8], Packet> {
-    bits(packet)(input)
+    bits(packet).parse(input)
 }
 
 #[aoc_generator(day16)]

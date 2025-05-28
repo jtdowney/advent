@@ -1,7 +1,7 @@
 use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
 use itertools::{iproduct, Itertools};
-use nom::{Finish, IResult};
+use nom::{Finish, IResult, Parser};
 
 const WIDTH: usize = 50;
 const HEIGHT: usize = 6;
@@ -18,23 +18,38 @@ fn instruction(input: &str) -> IResult<&str, Instruction> {
         bytes::complete::tag,
         character::complete::u8,
         combinator::map,
-        sequence::{preceded, tuple},
+        sequence::preceded,
     };
 
     let rectangle = map(
-        preceded(tag("rect "), tuple((u8, tag("x"), u8))),
-        |(x, _, y)| Instruction::Rectangle(x as usize, y as usize),
+        preceded(tag("rect "), |input| {
+            let (input, x) = u8(input)?;
+            let (input, _) = tag("x")(input)?;
+            let (input, y) = u8(input)?;
+            Ok((input, (x, y)))
+        }),
+        |(x, y)| Instruction::Rectangle(x as usize, y as usize),
     );
     let rotate_row = map(
-        preceded(tag("rotate row y="), tuple((u8, tag(" by "), u8))),
-        |(x, _, y)| Instruction::RotateRow(x as usize, y as usize),
+        preceded(tag("rotate row y="), |input| {
+            let (input, x) = u8(input)?;
+            let (input, _) = tag(" by ")(input)?;
+            let (input, y) = u8(input)?;
+            Ok((input, (x, y)))
+        }),
+        |(x, y)| Instruction::RotateRow(x as usize, y as usize),
     );
     let rotate_column = map(
-        preceded(tag("rotate column x="), tuple((u8, tag(" by "), u8))),
-        |(x, _, y)| Instruction::RotateColumn(x as usize, y as usize),
+        preceded(tag("rotate column x="), |input| {
+            let (input, x) = u8(input)?;
+            let (input, _) = tag(" by ")(input)?;
+            let (input, y) = u8(input)?;
+            Ok((input, (x, y)))
+        }),
+        |(x, y)| Instruction::RotateColumn(x as usize, y as usize),
     );
 
-    alt((rectangle, rotate_row, rotate_column))(input)
+    alt((rectangle, rotate_row, rotate_column)).parse(input)
 }
 
 #[aoc_generator(day8)]
@@ -42,7 +57,8 @@ fn generator(input: &str) -> anyhow::Result<Vec<Instruction>> {
     input
         .lines()
         .map(|line| {
-            instruction(line)
+            instruction
+                .parse(line)
                 .finish()
                 .map(|(_, i)| i)
                 .map_err(|_| anyhow!("Parse error: {}", line))

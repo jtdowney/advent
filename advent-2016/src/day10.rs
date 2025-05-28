@@ -1,7 +1,7 @@
 use std::collections::{BTreeSet, HashMap, VecDeque};
 
 use aoc_runner_derive::{aoc, aoc_generator};
-use nom::IResult;
+use nom::{IResult, Parser};
 
 #[derive(Clone, Copy, Debug, PartialOrd, Ord, PartialEq, Eq)]
 struct Microchip(u32);
@@ -26,7 +26,7 @@ struct Instruction(Bot, Command);
 
 fn bot(input: &str) -> IResult<&str, Bot> {
     use nom::{character::complete::u32, combinator::map};
-    map(u32, Bot)(input)
+    map(u32, Bot).parse(input)
 }
 
 fn destination(input: &str) -> IResult<&str, Destination> {
@@ -38,33 +38,39 @@ fn destination(input: &str) -> IResult<&str, Destination> {
     alt((
         map(preceded(tag("bot "), bot), Destination::Bot),
         map(preceded(tag("output "), u32), Destination::Output),
-    ))(input)
+    )).parse(input)
 }
 
 fn instruction(input: &str) -> IResult<&str, Instruction> {
     use nom::{
         branch::alt, bytes::complete::tag, character::complete::u32, combinator::map,
-        sequence::tuple,
     };
 
-    let microchip = map(u32, Microchip);
+    let mut microchip = map(u32, Microchip);
     let pickup = map(
-        tuple((tag("value "), microchip, tag(" goes to bot "), bot)),
-        |(_, m, _, b)| Instruction(b, Command::Pickup(m)),
+        |input| {
+            let (input, _) = tag("value ")(input)?;
+            let (input, m) = microchip.parse(input)?;
+            let (input, _) = tag(" goes to bot ")(input)?;
+            let (input, b) = bot(input)?;
+            Ok((input, (m, b)))
+        },
+        |(m, b)| Instruction(b, Command::Pickup(m)),
     );
     let transfer = map(
-        tuple((
-            tag("bot "),
-            bot,
-            tag(" gives low to "),
-            destination,
-            tag(" and high to "),
-            destination,
-        )),
-        |(_, b, _, low, _, high)| Instruction(b, Command::Transfer(low, high)),
+        |input| {
+            let (input, _) = tag("bot ")(input)?;
+            let (input, b) = bot(input)?;
+            let (input, _) = tag(" gives low to ")(input)?;
+            let (input, low) = destination(input)?;
+            let (input, _) = tag(" and high to ")(input)?;
+            let (input, high) = destination(input)?;
+            Ok((input, (b, low, high)))
+        },
+        |(b, low, high)| Instruction(b, Command::Transfer(low, high)),
     );
 
-    alt((pickup, transfer))(input)
+    alt((pickup, transfer)).parse(input)
 }
 
 #[aoc_generator(day10)]
@@ -72,7 +78,8 @@ fn generate(input: &str) -> anyhow::Result<Vec<Instruction>> {
     input
         .lines()
         .map(|line| {
-            instruction(line)
+            instruction
+                .parse(line)
                 .map(|(_, i)| i)
                 .map_err(|_| anyhow::anyhow!("Error parsing instruction: {}", line))
         })

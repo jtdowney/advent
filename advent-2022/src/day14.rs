@@ -8,7 +8,7 @@ use nom::{
     character::complete::{char, i16, line_ending},
     multi::separated_list1,
     sequence::separated_pair,
-    Finish, IResult,
+    Finish, IResult, Parser,
 };
 
 type Point = (i16, i16);
@@ -19,7 +19,7 @@ const DROP_POINT: Point = (500, 0);
 fn parse_input(input: &str) -> IResult<&str, Vec<Vec<Point>>> {
     let parse_point = separated_pair(i16, char(','), i16);
     let parse_line = separated_list1(tag(" -> "), parse_point);
-    separated_list1(line_ending, parse_line)(input)
+    separated_list1(line_ending, parse_line).parse(input)
 }
 
 #[aoc_generator(day14)]

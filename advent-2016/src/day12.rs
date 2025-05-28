@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
-use nom::IResult;
+use nom::{IResult, Parser};
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 struct Register(char);
@@ -23,36 +23,35 @@ fn register(input: &str) -> IResult<&str, Register> {
     use nom::{branch::alt, character::complete::char, combinator::map};
     map(alt((char('a'), char('b'), char('c'), char('d'))), |c| {
         Register(c)
-    })(input)
+    }).parse(input)
 }
 
 fn operand(input: &str) -> IResult<&str, Operand> {
     use nom::{branch::alt, character::complete::i32, combinator::map};
-    alt((map(register, Operand::Register), map(i32, Operand::Literal)))(input)
+    alt((map(register, Operand::Register), map(i32, Operand::Literal))).parse(input)
 }
 
 fn instruction(input: &str) -> IResult<&str, Instruction> {
     use nom::{
         branch::alt, bytes::complete::tag, character::complete::i32, combinator::map,
-        sequence::tuple,
     };
 
     let copy = map(
-        tuple((tag("cpy "), operand, tag(" "), register)),
+        (tag("cpy "), operand, tag(" "), register),
         |(_, operand, _, register)| Instruction::Copy(operand, register),
     );
-    let increment = map(tuple((tag("inc "), register)), |(_, register)| {
+    let increment = map((tag("inc "), register), |(_, register)| {
         Instruction::Increment(register)
     });
-    let decrement = map(tuple((tag("dec "), register)), |(_, register)| {
+    let decrement = map((tag("dec "), register), |(_, register)| {
         Instruction::Decrement(register)
     });
     let jump_not_zero = map(
-        tuple((tag("jnz "), operand, tag(" "), i32)),
+        (tag("jnz "), operand, tag(" "), i32),
         |(_, operand, _, offset)| Instruction::JumpNotZero(operand, offset as isize),
     );
 
-    alt((copy, increment, decrement, jump_not_zero))(input)
+    alt((copy, increment, decrement, jump_not_zero)).parse(input)
 }
 
 #[aoc_generator(day12)]
@@ -60,7 +59,8 @@ fn generator(input: &str) -> anyhow::Result<Vec<Instruction>> {
     input
         .lines()
         .map(|line| {
-            instruction(line)
+            instruction
+                .parse(line)
                 .map(|(_, instruction)| instruction)
                 .map_err(|_| anyhow!("Invalid input: {}", line))
         })

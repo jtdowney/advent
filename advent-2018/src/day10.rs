@@ -2,7 +2,7 @@ use std::{collections::HashSet, str::FromStr};
 
 use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
-use nom::IResult;
+use nom::{IResult, Parser};
 
 #[derive(Clone, Copy, Debug)]
 struct Vector {
@@ -35,7 +35,7 @@ impl FromStr for Particle {
                     char('>'),
                 ),
                 |(x, y)| Vector { x, y },
-            )(input)
+            ).parse(input)
         }
 
         let mut parser = map(
@@ -47,7 +47,7 @@ impl FromStr for Particle {
             |(position, velocity)| Particle { position, velocity },
         );
 
-        parser(s)
+        parser.parse(s)
             .map(|(_, particle)| particle)
             .map_err(|e| anyhow!("Invalid particle: {}", e))
     }

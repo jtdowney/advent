@@ -7,8 +7,8 @@ use nom::{
     bytes::complete::{tag, take_while1},
     character::complete::{space1, u32},
     combinator::{map, value},
-    sequence::{preceded, separated_pair, tuple},
-    Finish, IResult,
+    sequence::{preceded, separated_pair},
+    Finish, IResult, Parser,
 };
 
 #[derive(Clone)]
@@ -23,29 +23,29 @@ fn parse_path(input: &str) -> IResult<&str, String> {
     map(
         take_while1(|c: char| c.is_ascii_alphabetic() || c == '.' || c == '/'),
         String::from,
-    )(input)
+    ).parse(input)
 }
 
 fn parse_command(input: &str) -> IResult<&str, Token> {
     let parse_ls = value(Token::List, tag("ls"));
-    let parse_cd = map(preceded(tuple((tag("cd"), space1)), parse_path), |target| {
+    let parse_cd = map(preceded((tag("cd"), space1), parse_path), |target| {
         Token::ChangeDirectory { target }
     });
-    preceded(tuple((tag("$"), space1)), alt((parse_cd, parse_ls)))(input)
+    preceded((tag("$"), space1), alt((parse_cd, parse_ls))).parse(input)
 }
 
 fn parse_output(input: &str) -> IResult<&str, Token> {
-    let parse_directory = map(preceded(tuple((tag("dir"), space1)), parse_path), |name| {
+    let parse_directory = map(preceded((tag("dir"), space1), parse_path), |name| {
         Token::OutputDirectory { name }
     });
     let parse_file = map(separated_pair(u32, space1, parse_path), |(size, name)| {
         Token::OutputFile { name, size }
     });
-    alt((parse_directory, parse_file))(input)
+    alt((parse_directory, parse_file)).parse(input)
 }
 
 fn parse_token(input: &str) -> IResult<&str, Token> {
-    alt((parse_command, parse_output))(input)
+    alt((parse_command, parse_output)).parse(input)
 }
 
 enum Entry {

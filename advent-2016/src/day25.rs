@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
-use nom::IResult;
+use nom::{IResult, Parser};
 
 const SAMPLES: usize = 10;
 
@@ -24,39 +24,39 @@ enum Instruction {
 
 fn register(input: &str) -> IResult<&str, char> {
     use nom::{branch::alt, character::complete::char};
-    alt((char('a'), char('b'), char('c'), char('d')))(input)
+    alt((char('a'), char('b'), char('c'), char('d'))).parse(input)
 }
 
 fn operand(input: &str) -> IResult<&str, Operand> {
     use nom::{branch::alt, character::complete::i32, combinator::map};
-    alt((map(register, Operand::Register), map(i32, Operand::Literal)))(input)
+    alt((map(register, Operand::Register), map(i32, Operand::Literal))).parse(input)
 }
 
 fn instruction(input: &str) -> IResult<&str, Instruction> {
-    use nom::{branch::alt, bytes::complete::tag, combinator::map, sequence::tuple};
+    use nom::{branch::alt, bytes::complete::tag, combinator::map};
 
     let copy = map(
-        tuple((tag("cpy "), operand, tag(" "), operand)),
+        (tag("cpy "), operand, tag(" "), operand),
         |(_, op1, _, op2)| Instruction::Copy(op1, op2),
     );
-    let increment = map(tuple((tag("inc "), operand)), |(_, op)| {
+    let increment = map((tag("inc "), operand), |(_, op)| {
         Instruction::Increment(op)
     });
-    let decrement = map(tuple((tag("dec "), operand)), |(_, op)| {
+    let decrement = map((tag("dec "), operand), |(_, op)| {
         Instruction::Decrement(op)
     });
     let jump_not_zero = map(
-        tuple((tag("jnz "), operand, tag(" "), operand)),
+        (tag("jnz "), operand, tag(" "), operand),
         |(_, op1, _, op2)| Instruction::JumpNotZero(op1, op2),
     );
-    let toggle = map(tuple((tag("tgl "), operand)), |(_, op)| {
+    let toggle = map((tag("tgl "), operand), |(_, op)| {
         Instruction::Toggle(op)
     });
-    let out = map(tuple((tag("out "), operand)), |(_, op)| {
+    let out = map((tag("out "), operand), |(_, op)| {
         Instruction::Out(op)
     });
 
-    alt((copy, increment, decrement, jump_not_zero, toggle, out))(input)
+    alt((copy, increment, decrement, jump_not_zero, toggle, out)).parse(input)
 }
 
 #[aoc_generator(day25)]
@@ -64,7 +64,8 @@ fn generator(input: &str) -> anyhow::Result<Vec<Instruction>> {
     input
         .lines()
         .map(|line| {
-            instruction(line)
+            instruction
+                .parse(line)
                 .map(|(_, instruction)| instruction)
                 .map_err(|_| anyhow!("Invalid input: {}", line))
         })

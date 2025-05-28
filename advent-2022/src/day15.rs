@@ -8,8 +8,8 @@ use nom::{
     character::complete::{i64, line_ending},
     combinator::map,
     multi::separated_list1,
-    sequence::{preceded, separated_pair, tuple},
-    Finish, IResult,
+    sequence::{preceded, separated_pair},
+    Finish, IResult, Parser,
 };
 
 const TARGET_ROW: i64 = 2000000;
@@ -48,21 +48,21 @@ fn parse_point(input: &str) -> IResult<&str, Point> {
             preceded(tag("y="), i64),
         ),
         |(x, y)| Point(x, y),
-    )(input)
+    ).parse(input)
 }
 
 fn parse_input(input: &str) -> IResult<&str, HashMap<Point, Point>> {
     let line = map(
-        tuple((
+        (
             tag("Sensor at "),
             parse_point,
             tag(": closest beacon is at "),
             parse_point,
-        )),
+        ),
         |(_, a, _, b)| (a, b),
     );
 
-    map(separated_list1(line_ending, line), HashMap::from_iter)(input)
+    map(separated_list1(line_ending, line), HashMap::from_iter).parse(input)
 }
 
 #[aoc_generator(day15)]

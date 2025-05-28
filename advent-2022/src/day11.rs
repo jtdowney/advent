@@ -9,8 +9,8 @@ use nom::{
     character::complete::{line_ending, u64, u8},
     combinator::{map, value},
     multi::separated_list1,
-    sequence::{preceded, tuple},
-    IResult,
+    sequence::preceded,
+    IResult, Parser,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -44,7 +44,7 @@ fn parse_items(input: &str) -> IResult<&str, VecDeque<u64>> {
     map(
         preceded(tag("  Starting items: "), separated_list1(tag(", "), u64)),
         VecDeque::from,
-    )(input)
+    ).parse(input)
 }
 
 fn parse_operation(input: &str) -> IResult<&str, Operation> {
@@ -54,32 +54,32 @@ fn parse_operation(input: &str) -> IResult<&str, Operation> {
     preceded(
         tag("  Operation: new = "),
         alt((parse_add, parse_multiply, parse_double)),
-    )(input)
+    ).parse(input)
 }
 
 fn parse_test(input: &str) -> IResult<&str, u64> {
-    preceded(tag("  Test: divisible by "), u64)(input)
+    preceded(tag("  Test: divisible by "), u64).parse(input)
 }
 
 fn parse_throw<'a>(input: &'a str, result: &'static str) -> IResult<&'a str, usize> {
-    let (input, _) = tag("    If ")(input)?;
-    let (input, _) = tag(result)(input)?;
+    let (input, _) = tag("    If ").parse(input)?;
+    let (input, _) = tag(result).parse(input)?;
     map(preceded(tag(": throw to monkey "), u64), |target| {
         target as usize
-    })(input)
+    }).parse(input)
 }
 
 fn parse_monkey(input: &str) -> IResult<&str, Monkey> {
-    let (input, _) = tuple((tag("Monkey "), u8, tag(":")))(input)?;
-    let (input, _) = line_ending(input)?;
+    let (input, _) = (tag("Monkey "), u8, tag(":")).parse(input)?;
+    let (input, _) = line_ending.parse(input)?;
     let (input, items) = parse_items(input)?;
-    let (input, _) = line_ending(input)?;
+    let (input, _) = line_ending.parse(input)?;
     let (input, operation) = parse_operation(input)?;
-    let (input, _) = line_ending(input)?;
+    let (input, _) = line_ending.parse(input)?;
     let (input, test) = parse_test(input)?;
-    let (input, _) = line_ending(input)?;
+    let (input, _) = line_ending.parse(input)?;
     let (input, throw_true) = parse_throw(input, "true")?;
-    let (input, _) = line_ending(input)?;
+    let (input, _) = line_ending.parse(input)?;
     let (input, throw_false) = parse_throw(input, "false")?;
 
     let monkey = Monkey {

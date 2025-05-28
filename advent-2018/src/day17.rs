@@ -8,7 +8,7 @@ use std::{
 use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
 use itertools::Itertools;
-use nom::IResult;
+use nom::{IResult, Parser};
 
 type Point = (i32, i32);
 type Grid = HashMap<Point, Cell>;
@@ -46,31 +46,31 @@ impl FromStr for Scan {
             bytes::complete::tag,
             character::complete::i32,
             combinator::map,
-            sequence::{preceded, separated_pair, tuple},
+            sequence::{preceded, separated_pair},
         };
 
         let range = |input| -> IResult<&str, RangeInclusive<i32>> {
-            map(separated_pair(i32, tag(".."), i32), |(a, b)| a..=b)(input)
+            map(separated_pair(i32, tag(".."), i32), |(a, b)| a..=b).parse(input)
         };
 
         let horizontal = map(
-            tuple((
+            (
                 preceded(tag("y="), i32),
                 tag(", "),
                 preceded(tag("x="), range),
-            )),
+            ),
             |(y, _, x)| Scan::Horizontal(x, y),
         );
         let vertical = map(
-            tuple((
+            (
                 preceded(tag("x="), i32),
                 tag(", "),
                 preceded(tag("y="), range),
-            )),
+            ),
             |(x, _, y)| Scan::Vertical(x, y),
         );
 
-        alt((horizontal, vertical))(s)
+        alt((horizontal, vertical)).parse(s)
             .map(|(_, scan)| scan)
             .map_err(|e| anyhow!("unable to parse scan: {}", e))
     }

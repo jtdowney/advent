@@ -7,8 +7,8 @@ use nom::{
     bytes::complete::tag,
     character::complete::{i32, space1},
     combinator::{map, value},
-    sequence::{preceded, tuple},
-    IResult,
+    sequence::preceded,
+    IResult, Parser,
 };
 use smallvec::{smallvec, SmallVec};
 
@@ -21,11 +21,11 @@ enum Instruction {
 fn parse_instruction(input: &str) -> IResult<&str, Instruction> {
     let parse_noop = value(Instruction::Noop, tag("noop"));
     let parse_addx = map(
-        preceded(tuple((tag("addx"), space1)), i32),
+        preceded((tag("addx"), space1), i32),
         Instruction::AddX,
     );
 
-    alt((parse_noop, parse_addx))(input)
+    alt((parse_noop, parse_addx)).parse(input)
 }
 
 #[aoc_generator(day10)]

@@ -7,7 +7,7 @@ use nom::{
     combinator::{map, map_res, value, verify},
     multi::fold_many0,
     sequence::{delimited, preceded},
-    IResult,
+    IResult, Parser,
 };
 
 #[derive(Debug, Clone, Copy)]
@@ -17,11 +17,11 @@ enum StringFragment<'a> {
 }
 
 fn hex_encoded(input: &str) -> IResult<&str, u8> {
-    let (input, _) = tag("x")(input)?;
+    let (input, _) = tag("x").parse(input)?;
     map_res(
         take_while_m_n(2, 2, |c: char| c.is_ascii_hexdigit()),
         |value| u8::from_str_radix(value, 16),
-    )(input)
+    ).parse(input)
 }
 
 fn escaped(input: &str) -> IResult<&str, u8> {
@@ -32,19 +32,19 @@ fn escaped(input: &str) -> IResult<&str, u8> {
             value(b'"', char('"')),
             value(b'\\', char('\\')),
         )),
-    )(input)
+    ).parse(input)
 }
 
 fn literal(input: &str) -> IResult<&str, &str> {
     let not_quote_slash = is_not("\"\\");
-    verify(not_quote_slash, |s: &str| !s.is_empty())(input)
+    verify(not_quote_slash, |s: &str| !s.is_empty()).parse(input)
 }
 
 fn fragment(input: &str) -> IResult<&str, StringFragment> {
     alt((
         map(literal, StringFragment::Literal),
         map(escaped, StringFragment::EscapedChar),
-    ))(input)
+    )).parse(input)
 }
 
 fn string(input: &str) -> IResult<&str, Vec<u8>> {
@@ -58,7 +58,7 @@ fn string(input: &str) -> IResult<&str, Vec<u8>> {
             acc
         }),
         tag("\""),
-    )(input)
+    ).parse(input)
 }
 
 #[aoc_generator(day8)]

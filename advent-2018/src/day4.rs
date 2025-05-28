@@ -2,7 +2,7 @@ use std::{collections::HashMap, str::FromStr};
 
 use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
-use nom::Finish;
+use nom::{Finish, Parser};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 enum Action {
@@ -31,14 +31,14 @@ impl FromStr for Event {
             character::complete::{char, space1, u16, u8},
             combinator::map,
             error::Error,
-            sequence::{delimited, preceded, tuple},
+            sequence::{delimited, preceded},
         };
 
         let mut parser = map(
-            tuple((
+            (
                 delimited(
                     char::<_, Error<_>>('['),
-                    tuple((
+                    (
                         u16,
                         char('-'),
                         u8,
@@ -48,7 +48,7 @@ impl FromStr for Event {
                         u8,
                         char(':'),
                         u8,
-                    )),
+                    ),
                     char(']'),
                 ),
                 space1,
@@ -57,7 +57,7 @@ impl FromStr for Event {
                     map(tag("falls asleep"), |_| Action::FallAsleep),
                     map(tag("wakes up"), |_| Action::WakeUp),
                 )),
-            )),
+            ),
             |((year, _, month, _, day, _, hour, _, minute), _, action)| Event {
                 year,
                 month,
@@ -68,7 +68,7 @@ impl FromStr for Event {
             },
         );
 
-        let (_, event) = parser(s)
+        let (_, event) = parser.parse(s)
             .finish()
             .map_err(|e| anyhow!("unable to parse event: {}", e))?;
         Ok(event)

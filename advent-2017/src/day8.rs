@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
-use nom::{Finish, IResult};
+use nom::{Finish, IResult, Parser};
 
 #[derive(Debug, Clone, Copy)]
 enum Operation {
@@ -30,7 +30,7 @@ struct Instruction {
 
 fn register(input: &str) -> IResult<&str, String> {
     use nom::{character::complete::alpha1, combinator::map};
-    map(alpha1, String::from)(input)
+    map(alpha1, String::from).parse(input)
 }
 
 fn instruction(input: &str) -> IResult<&str, Instruction> {
@@ -39,7 +39,7 @@ fn instruction(input: &str) -> IResult<&str, Instruction> {
         bytes::complete::tag,
         character::complete::{i32, space1},
         combinator::map,
-        sequence::{preceded, tuple},
+        sequence::preceded,
     };
 
     let operation = alt((
@@ -56,7 +56,7 @@ fn instruction(input: &str) -> IResult<&str, Instruction> {
     ));
 
     map(
-        tuple((
+        (
             register,
             space1,
             operation,
@@ -65,14 +65,14 @@ fn instruction(input: &str) -> IResult<&str, Instruction> {
             register,
             space1,
             condition,
-        )),
+        ),
         |(operation_register, _, operation, _, _, condition_register, _, condition)| Instruction {
             operation_register,
             operation,
             condition_register,
             condition,
         },
-    )(input)
+    ).parse(input)
 }
 
 #[aoc_generator(day8)]

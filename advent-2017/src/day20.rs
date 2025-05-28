@@ -2,7 +2,7 @@ use std::ops::{Add, AddAssign};
 
 use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
-use nom::{Finish, IResult};
+use nom::{Finish, IResult, Parser};
 
 const ITERATIONS: usize = 500;
 
@@ -59,40 +59,40 @@ fn vector(input: &str) -> IResult<&str, Vector> {
         bytes::complete::tag,
         character::complete::i64,
         combinator::map,
-        sequence::{delimited, tuple},
+        sequence::delimited,
     };
 
     map(
         delimited(
             tag("<"),
-            tuple((i64, tag(","), i64, tag(","), i64)),
+            (i64, tag(","), i64, tag(","), i64),
             tag(">"),
         ),
         |(x, _, y, _, z)| Vector { x, y, z },
-    )(input)
+    ).parse(input)
 }
 
 fn particle(input: &str) -> IResult<&str, Particle> {
     use nom::{
         bytes::complete::tag,
         combinator::map,
-        sequence::{preceded, tuple},
+        sequence::preceded,
     };
 
     map(
-        tuple((
+        (
             preceded(tag("p="), vector),
             tag(", "),
             preceded(tag("v="), vector),
             tag(", "),
             preceded(tag("a="), vector),
-        )),
+        ),
         |(position, _, velocity, _, acceleration)| Particle {
             position,
             velocity,
             acceleration,
         },
-    )(input)
+    ).parse(input)
 }
 
 #[aoc_generator(day20)]

@@ -1,19 +1,24 @@
 use anyhow::anyhow;
 use aoc_runner_derive::aoc;
-use nom::{Finish, IResult};
+use nom::{Finish, IResult, Parser};
 
 fn marker(input: &[u8]) -> IResult<&[u8], (usize, usize)> {
     use nom::{
         bytes::complete::tag,
         character::complete::u32,
         combinator::map,
-        sequence::{delimited, tuple},
+        sequence::delimited,
     };
 
     map(
-        delimited(tag("("), tuple((u32, tag("x"), u32)), tag(")")),
-        |(length, _, count)| (length as usize, count as usize),
-    )(input)
+        delimited(tag("("), |input| {
+            let (input, length) = u32(input)?;
+            let (input, _) = tag("x")(input)?;
+            let (input, count) = u32(input)?;
+            Ok((input, (length, count)))
+        }, tag(")")),
+        |(length, count)| (length as usize, count as usize),
+    ).parse(input)
 }
 
 fn decompress(mut input: &[u8]) -> anyhow::Result<Vec<u8>> {
@@ -25,7 +30,8 @@ fn decompress(mut input: &[u8]) -> anyhow::Result<Vec<u8>> {
     while let Some(i) = input.iter().position(|&b| b == b'(') {
         decompressed.extend_from_slice(&input[..i]);
 
-        let (rest, (length, count)) = marker(&input[i..])
+        let (rest, (length, count)) = marker
+            .parse(&input[i..])
             .finish()
             .map_err(|e| anyhow!("Error parsing marker: {:?}", e))?;
         let (data, rest) = rest.split_at(length);

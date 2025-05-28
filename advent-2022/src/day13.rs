@@ -7,8 +7,8 @@ use nom::{
     character::complete::{char, line_ending, u32},
     combinator::{complete, map},
     multi::{separated_list0, separated_list1},
-    sequence::{delimited, separated_pair, tuple},
-    IResult,
+    sequence::{delimited, separated_pair},
+    IResult, Parser,
 };
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
@@ -43,15 +43,15 @@ fn parse_packet(input: &str) -> IResult<&str, Packet> {
             char(']'),
         ),
         Packet::List,
-    )(input)
+    ).parse(input)
 }
 
 fn parse_input(input: &str) -> IResult<&str, Vec<(Packet, Packet)>> {
     let parse_pair = separated_pair(parse_packet, line_ending, parse_packet);
     complete(separated_list1(
-        tuple((line_ending, line_ending)),
+        (line_ending, line_ending),
         parse_pair,
-    ))(input)
+    )).parse(input)
 }
 
 #[aoc_generator(day13)]

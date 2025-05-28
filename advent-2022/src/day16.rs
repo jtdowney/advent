@@ -9,8 +9,7 @@ use nom::{
     character::complete::{alpha1, u32},
     combinator::map,
     multi::separated_list1,
-    sequence::tuple,
-    Finish, IResult,
+    Finish, IResult, Parser,
 };
 use smallvec::{smallvec, SmallVec};
 
@@ -28,7 +27,7 @@ fn parse_valve(input: &str) -> IResult<&str, (String, u32, Vec<String>)> {
     let tunnels = separated_list1(tag(", "), map(alpha1, String::from));
 
     map(
-        tuple((
+        (
             tag("Valve "),
             alpha1,
             tag(" has flow rate="),
@@ -38,9 +37,9 @@ fn parse_valve(input: &str) -> IResult<&str, (String, u32, Vec<String>)> {
                 tag("; tunnels lead to valves "),
             )),
             tunnels,
-        )),
+        ),
         |(_, name, _, flow_rate, _, connections)| (String::from(name), flow_rate, connections),
-    )(input)
+    ).parse(input)
 }
 
 fn compute_distances(names: &[String], connections: &[Vec<String>]) -> HashMap<(usize, usize), u8> {

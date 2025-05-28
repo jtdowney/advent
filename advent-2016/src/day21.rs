@@ -1,7 +1,7 @@
 use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
 use itertools::Itertools;
-use nom::{Finish, IResult};
+use nom::{Finish, IResult, Parser};
 
 const START_WORD: &str = "abcdefgh";
 const END_WORD: &str = "fbgdceah";
@@ -70,34 +70,33 @@ fn operation(input: &str) -> IResult<&str, Operation> {
         bytes::complete::tag,
         character::complete::{anychar, u32},
         combinator::map,
-        sequence::tuple,
     };
     use Operation::*;
 
     let swap_position = map(
-        tuple((tag("swap position "), u32, tag(" with position "), u32)),
+        (tag("swap position "), u32, tag(" with position "), u32),
         |(_, x, _, y)| SwapPosition(x as usize, y as usize),
     );
     let swap_letter = map(
-        tuple((tag("swap letter "), anychar, tag(" with letter "), anychar)),
+        (tag("swap letter "), anychar, tag(" with letter "), anychar),
         |(_, x, _, y)| SwapLetter(x, y),
     );
-    let rotate_left = map(tuple((tag("rotate left "), u32)), |(_, x)| {
+    let rotate_left = map((tag("rotate left "), u32), |(_, x)| {
         RotateLeft(x as usize)
     });
-    let rotate_right = map(tuple((tag("rotate right "), u32)), |(_, x)| {
+    let rotate_right = map((tag("rotate right "), u32), |(_, x)| {
         RotateRight(x as usize)
     });
     let rotate_based_on = map(
-        tuple((tag("rotate based on position of letter "), anychar)),
+        (tag("rotate based on position of letter "), anychar),
         |(_, x)| RotateBasedOn(x),
     );
     let reverse = map(
-        tuple((tag("reverse positions "), u32, tag(" through "), u32)),
+        (tag("reverse positions "), u32, tag(" through "), u32),
         |(_, x, _, y)| Reverse(x as usize, y as usize),
     );
     let move_position = map(
-        tuple((tag("move position "), u32, tag(" to position "), u32)),
+        (tag("move position "), u32, tag(" to position "), u32),
         |(_, x, _, y)| Move(x as usize, y as usize),
     );
     alt((
@@ -108,7 +107,7 @@ fn operation(input: &str) -> IResult<&str, Operation> {
         rotate_based_on,
         reverse,
         move_position,
-    ))(input)
+    )).parse(input)
 }
 
 #[aoc_generator(day21)]
@@ -116,7 +115,8 @@ fn generator(input: &str) -> anyhow::Result<Vec<Operation>> {
     input
         .lines()
         .map(|line| {
-            operation(line)
+            operation
+                .parse(line)
                 .finish()
                 .map(|(_, op)| op)
                 .map_err(|_| anyhow!("Invalid operation: {}", line))

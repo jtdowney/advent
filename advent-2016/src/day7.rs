@@ -1,6 +1,6 @@
 use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
-use nom::{Finish, IResult};
+use nom::{Finish, IResult, Parser};
 
 #[derive(Debug)]
 enum AddressPart {
@@ -81,12 +81,12 @@ fn address_part(input: &str) -> IResult<&str, String> {
     map(
         take_while1(|c: char| c.is_ascii_alphabetic() && !(c == '[' || c == ']')),
         String::from,
-    )(input)
+    ).parse(input)
 }
 
 fn normal_part(input: &str) -> IResult<&str, AddressPart> {
     use nom::combinator::map;
-    map(address_part, AddressPart::Normal)(input)
+    map(address_part, AddressPart::Normal).parse(input)
 }
 
 fn hypernet_part(input: &str) -> IResult<&str, AddressPart> {
@@ -94,14 +94,14 @@ fn hypernet_part(input: &str) -> IResult<&str, AddressPart> {
     map(
         delimited(tag("["), address_part, tag("]")),
         AddressPart::Hypernet,
-    )(input)
+    ).parse(input)
 }
 
 fn address(input: &str) -> IResult<&str, Address> {
     use nom::{branch::alt, combinator::map, multi::many1};
     map(many1(alt((normal_part, hypernet_part))), |parts| Address {
         parts,
-    })(input)
+    }).parse(input)
 }
 
 #[aoc_generator(day7)]
@@ -109,7 +109,8 @@ fn generator(input: &str) -> anyhow::Result<Vec<Address>> {
     input
         .lines()
         .map(|line| {
-            address(line)
+            address
+                .parse(line)
                 .finish()
                 .map(|(_, addr)| addr)
                 .map_err(|_| anyhow!("Invalid address: {:?}", line))

@@ -2,6 +2,7 @@ use std::str::FromStr;
 
 use anyhow::{anyhow, Context};
 use aoc_runner_derive::{aoc, aoc_generator};
+use nom::Parser;
 
 #[derive(Copy, Clone, Debug)]
 enum Opcode {
@@ -41,12 +42,11 @@ impl FromStr for Instruction {
             character::complete::{space1, u32},
             combinator::{map, value},
             error::Error,
-            sequence::tuple,
             Finish,
         };
 
         let mut instruction = map(
-            tuple((
+            (
                 alt((
                     value(Opcode::Addr, tag::<_, _, Error<&str>>("addr")),
                     value(Opcode::Addi, tag("addi")),
@@ -71,11 +71,11 @@ impl FromStr for Instruction {
                 u32,
                 space1,
                 u32,
-            )),
+            ),
             |(opcode, _, a, _, b, _, c)| Instruction(opcode, a as usize, b as usize, c as usize),
         );
 
-        instruction(s)
+        instruction.parse(s)
             .finish()
             .map(|(_, instruction)| instruction)
             .map_err(|e| anyhow!("unable to parse instruction: {:?}", e))

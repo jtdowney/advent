@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
 use itertools::iproduct;
-use nom::{Finish, IResult};
+use nom::{Finish, IResult, Parser};
 
 #[derive(Clone, Copy, Debug)]
 struct Claim {
@@ -19,17 +19,17 @@ fn claim(input: &str) -> IResult<&str, Claim> {
         bytes::complete::tag,
         character::complete::{char, u16},
         combinator::map,
-        sequence::{preceded, separated_pair, tuple},
+        sequence::{preceded, separated_pair},
     };
 
     map(
-        tuple((
+        (
             preceded(char('#'), u16),
             tag(" @ "),
             separated_pair(u16, char(','), u16),
             tag(": "),
             separated_pair(u16, char('x'), u16),
-        )),
+        ),
         |(id, _, (x, y), _, (width, height))| Claim {
             id,
             x,
@@ -37,7 +37,7 @@ fn claim(input: &str) -> IResult<&str, Claim> {
             width,
             height,
         },
-    )(input)
+    ).parse(input)
 }
 
 #[aoc_generator(day3)]

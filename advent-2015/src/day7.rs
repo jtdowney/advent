@@ -6,76 +6,76 @@ use nom::{
     branch::alt,
     bytes::complete::tag,
     character::complete::{alpha1, space1, u16},
-    IResult,
+    IResult, Parser,
 };
 
 fn variable(input: &str) -> IResult<&str, Expression> {
-    let (input, name) = alpha1(input)?;
+    let (input, name) = alpha1.parse(input)?;
     Ok((input, Expression::Variable(name.to_string())))
 }
 
 fn literal(input: &str) -> IResult<&str, Expression> {
-    let (input, value) = u16(input)?;
+    let (input, value) = u16.parse(input)?;
     Ok((input, Expression::Literal(value)))
 }
 
 fn term(input: &str) -> IResult<&str, Expression> {
-    alt((literal, variable))(input)
+    alt((literal, variable)).parse(input)
 }
 
 fn and(input: &str) -> IResult<&str, Expression> {
     let (input, lhs) = term(input)?;
-    let (input, _) = space1(input)?;
-    let (input, _) = tag("AND")(input)?;
-    let (input, _) = space1(input)?;
+    let (input, _) = space1.parse(input)?;
+    let (input, _) = tag("AND").parse(input)?;
+    let (input, _) = space1.parse(input)?;
     let (input, rhs) = term(input)?;
     Ok((input, Expression::And(Box::new(lhs), Box::new(rhs))))
 }
 
 fn or(input: &str) -> IResult<&str, Expression> {
     let (input, lhs) = term(input)?;
-    let (input, _) = space1(input)?;
-    let (input, _) = tag("OR")(input)?;
-    let (input, _) = space1(input)?;
+    let (input, _) = space1.parse(input)?;
+    let (input, _) = tag("OR").parse(input)?;
+    let (input, _) = space1.parse(input)?;
     let (input, rhs) = term(input)?;
     Ok((input, Expression::Or(Box::new(lhs), Box::new(rhs))))
 }
 
 fn not(input: &str) -> IResult<&str, Expression> {
-    let (input, _) = tag("NOT")(input)?;
-    let (input, _) = space1(input)?;
+    let (input, _) = tag("NOT").parse(input)?;
+    let (input, _) = space1.parse(input)?;
     let (input, term) = term(input)?;
     Ok((input, Expression::Not(Box::new(term))))
 }
 
 fn left_shift(input: &str) -> IResult<&str, Expression> {
     let (input, lhs) = term(input)?;
-    let (input, _) = space1(input)?;
-    let (input, _) = tag("LSHIFT")(input)?;
-    let (input, _) = space1(input)?;
+    let (input, _) = space1.parse(input)?;
+    let (input, _) = tag("LSHIFT").parse(input)?;
+    let (input, _) = space1.parse(input)?;
     let (input, rhs) = literal(input)?;
     Ok((input, Expression::LeftShift(Box::new(lhs), Box::new(rhs))))
 }
 
 fn right_shift(input: &str) -> IResult<&str, Expression> {
     let (input, lhs) = term(input)?;
-    let (input, _) = space1(input)?;
-    let (input, _) = tag("RSHIFT")(input)?;
-    let (input, _) = space1(input)?;
+    let (input, _) = space1.parse(input)?;
+    let (input, _) = tag("RSHIFT").parse(input)?;
+    let (input, _) = space1.parse(input)?;
     let (input, rhs) = literal(input)?;
     Ok((input, Expression::RightShift(Box::new(lhs), Box::new(rhs))))
 }
 
 fn expression(input: &str) -> IResult<&str, Expression> {
-    alt((and, or, not, left_shift, right_shift, term))(input)
+    alt((and, or, not, left_shift, right_shift, term)).parse(input)
 }
 
 fn instruction(input: &str) -> IResult<&str, Instruction> {
     let (input, expression) = expression(input)?;
-    let (input, _) = space1(input)?;
-    let (input, _) = tag("->")(input)?;
-    let (input, _) = space1(input)?;
-    let (input, destination) = alpha1(input)?;
+    let (input, _) = space1.parse(input)?;
+    let (input, _) = tag("->").parse(input)?;
+    let (input, _) = space1.parse(input)?;
+    let (input, destination) = alpha1.parse(input)?;
     let destination = destination.to_string();
     Ok((
         input,

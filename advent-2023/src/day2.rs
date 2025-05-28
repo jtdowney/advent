@@ -28,7 +28,7 @@ impl FromStr for Game {
             error::Error,
             multi::separated_list1,
             sequence::{pair, preceded, terminated},
-            Finish,
+            Finish, Parser,
         };
 
         map(
@@ -61,7 +61,7 @@ impl FromStr for Game {
                 ),
             ),
             |(id, draws)| Game { id, draws },
-        )(input)
+        ).parse(input)
         .finish()
         .map(|(_, game)| game)
         .map_err(|e| anyhow!("error parsing game: {:?}", e))

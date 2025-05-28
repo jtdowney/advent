@@ -8,7 +8,7 @@ use nom::{
     combinator::map,
     multi::separated_list1,
     sequence::separated_pair,
-    Finish, IResult,
+    Finish, IResult, Parser,
 };
 
 static ATTRIBUTES: LazyLock<HashMap<&'static str, usize>> = LazyLock::new(|| {
@@ -34,17 +34,17 @@ fn properties(input: &str) -> IResult<&str, HashMap<String, usize>> {
             tag(": "),
             map(u16, usize::from),
         ),
-    )(input)?;
+    ).parse(input)?;
 
     Ok((input, list.into_iter().collect()))
 }
 
 fn sue(input: &str) -> IResult<&str, (usize, HashMap<String, usize>)> {
-    let (input, _) = tag("Sue")(input)?;
-    let (input, _) = space1(input)?;
-    let (input, index) = map(u16, usize::from)(input)?;
-    let (input, _) = tag(":")(input)?;
-    let (input, _) = space1(input)?;
+    let (input, _) = tag("Sue").parse(input)?;
+    let (input, _) = space1.parse(input)?;
+    let (input, index) = map(u16, usize::from).parse(input)?;
+    let (input, _) = tag(":").parse(input)?;
+    let (input, _) = space1.parse(input)?;
     let (input, props) = properties(input)?;
 
     Ok((input, (index, props)))
