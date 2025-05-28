@@ -18,7 +18,7 @@ fn part1(input: &u32) -> u32 {
 fn part2(input: &u32) -> u32 {
     let n = *input;
     let mut left = (1..=n / 2 + 1).collect::<VecDeque<_>>();
-    let mut right = ((n + 1) / 2 + 1..=n).collect::<VecDeque<_>>();
+    let mut right = (n.div_ceil(2) + 1..=n).collect::<VecDeque<_>>();
     loop {
         if right.len() >= left.len() {
             right.pop_front();

@@ -23,7 +23,7 @@ fn marker(input: &[u8]) -> IResult<&[u8], (usize, usize)> {
 
 fn decompress(mut input: &[u8]) -> anyhow::Result<Vec<u8>> {
     let mut decompressed = Vec::with_capacity(input.len() * 2);
-    if !input.iter().any(|&b| b == b'(') {
+    if !input.contains(&b'(') {
         return Ok(input.to_vec());
     }
 

@@ -114,21 +114,21 @@ fn generator(input: &str) -> anyhow::Result<(Character, Character)> {
         .next()
         .context("Missing boss hit points")?
         .split(' ')
-        .last()
+        .next_back()
         .context("Missing boss hit points")?
         .parse()?;
     let damage = lines
         .next()
         .context("Missing boss damage")?
         .split(' ')
-        .last()
+        .next_back()
         .context("Missing boss damage")?
         .parse()?;
     let armor = lines
         .next()
         .context("Missing boss armor")?
         .split(' ')
-        .last()
+        .next_back()
         .context("Missing boss armor")?
         .parse()?;
 

@@ -127,7 +127,7 @@ fn solve<const N: usize>(input: &[Instruction]) -> usize {
     let state: State<N> = input.iter().fold(
         State::default(),
         |state, &Instruction { direction, count }| {
-            iter::repeat(direction).take(count).fold(state, move_knot)
+            iter::repeat_n(direction, count).fold(state, move_knot)
         },
     );
 

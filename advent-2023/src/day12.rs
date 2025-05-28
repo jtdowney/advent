@@ -70,12 +70,11 @@ impl Record {
     }
 
     fn unfold(&self) -> Self {
-        let conditions = itertools::intersperse(iter::repeat(&self.conditions).take(5), &vec!['?'])
+        let conditions = itertools::intersperse(iter::repeat_n(&self.conditions, 5), &vec!['?'])
             .flatten()
             .copied()
             .collect();
-        let chunks = iter::repeat(&self.chunks)
-            .take(5)
+        let chunks = iter::repeat_n(&self.chunks, 5)
             .flatten()
             .copied()
             .collect();

@@ -24,12 +24,12 @@ fn generator(input: &str) -> anyhow::Result<(Generator, Generator)> {
     let mut lines = input.lines();
     let seed_a = lines
         .next()
-        .and_then(|line| line.split(' ').last())
+        .and_then(|line| line.split(' ').next_back())
         .context("unable to get value")?
         .parse::<u64>()?;
     let seed_b = lines
         .next()
-        .and_then(|line| line.split(' ').last())
+        .and_then(|line| line.split(' ').next_back())
         .context("unable to get value")?
         .parse::<u64>()?;
 

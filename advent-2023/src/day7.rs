@@ -91,7 +91,7 @@ impl Hand {
         } = *self;
 
         let mut variants = HashSet::new();
-        if self.jokers && [a, b, c, d, e].iter().any(|&c| c == Card::Jack) {
+        if self.jokers && [a, b, c, d, e].contains(&Card::Jack) {
             let stable_cards = [a, b, c, d, e]
                 .into_iter()
                 .filter(|&c| c != Card::Jack)

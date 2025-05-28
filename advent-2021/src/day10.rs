@@ -21,10 +21,7 @@ fn check_syntax(line: &str) -> Result<Vec<char>, char> {
 fn part1(input: &[String]) -> u64 {
     input
         .iter()
-        .filter_map(|line| match check_syntax(line) {
-            Ok(_) => None,
-            Err(c) => Some(c),
-        })
+        .filter_map(|line| check_syntax(line).err())
         .map(|c| match c {
             ')' => 3,
             ']' => 57,
