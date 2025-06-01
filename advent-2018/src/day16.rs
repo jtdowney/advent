@@ -7,79 +7,9 @@ use anyhow::Context;
 use aoc_runner_derive::{aoc, aoc_generator};
 use regex::Regex;
 
+use crate::vm::{ALL_OPCODES, Instruction, Opcode};
+
 type Registers = Vec<usize>;
-
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
-enum Opcode {
-    Addr,
-    Addi,
-    Mulr,
-    Muli,
-    Banr,
-    Bani,
-    Borr,
-    Bori,
-    Setr,
-    Seti,
-    Gtir,
-    Gtri,
-    Gtrr,
-    Eqir,
-    Eqri,
-    Eqrr,
-}
-
-#[derive(Copy, Clone, Debug)]
-struct Instruction(Opcode, usize, usize, usize);
-
-impl Instruction {
-    fn apply(&self, before: &[usize]) -> Registers {
-        let mut after = before.to_vec();
-        match *self {
-            Instruction(Opcode::Addr, a, b, c) => after[c] = before[a] + before[b],
-            Instruction(Opcode::Addi, a, b, c) => after[c] = before[a] + b,
-            Instruction(Opcode::Mulr, a, b, c) => after[c] = before[a] * before[b],
-            Instruction(Opcode::Muli, a, b, c) => after[c] = before[a] * b,
-            Instruction(Opcode::Banr, a, b, c) => after[c] = before[a] & before[b],
-            Instruction(Opcode::Bani, a, b, c) => after[c] = before[a] & b,
-            Instruction(Opcode::Borr, a, b, c) => after[c] = before[a] | before[b],
-            Instruction(Opcode::Bori, a, b, c) => after[c] = before[a] | b,
-            Instruction(Opcode::Setr, a, _, c) => after[c] = before[a],
-            Instruction(Opcode::Seti, a, _, c) => after[c] = a,
-            Instruction(Opcode::Gtir, a, b, c) => after[c] = if a > before[b] { 1 } else { 0 },
-            Instruction(Opcode::Gtri, a, b, c) => after[c] = if before[a] > b { 1 } else { 0 },
-            Instruction(Opcode::Gtrr, a, b, c) => {
-                after[c] = if before[a] > before[b] { 1 } else { 0 }
-            }
-            Instruction(Opcode::Eqir, a, b, c) => after[c] = if a == before[b] { 1 } else { 0 },
-            Instruction(Opcode::Eqri, a, b, c) => after[c] = if before[a] == b { 1 } else { 0 },
-            Instruction(Opcode::Eqrr, a, b, c) => {
-                after[c] = if before[a] == before[b] { 1 } else { 0 }
-            }
-        };
-
-        after
-    }
-}
-
-const ALL_OPCODES: [Opcode; 16] = [
-    Opcode::Addr,
-    Opcode::Addi,
-    Opcode::Mulr,
-    Opcode::Muli,
-    Opcode::Banr,
-    Opcode::Bani,
-    Opcode::Borr,
-    Opcode::Bori,
-    Opcode::Setr,
-    Opcode::Seti,
-    Opcode::Gtir,
-    Opcode::Gtri,
-    Opcode::Gtrr,
-    Opcode::Eqir,
-    Opcode::Eqri,
-    Opcode::Eqrr,
-];
 
 #[derive(Debug)]
 struct Example {
@@ -174,7 +104,7 @@ fn part1(input: &Input) -> usize {
                 ALL_OPCODES
                     .iter()
                     .map(|opcode| Instruction(*opcode, *a, *b, *c))
-                    .filter(|instruction| &instruction.apply(before) == after)
+                    .filter(|instruction| &instruction.apply_to(before) == after)
                     .count()
             },
         )
@@ -198,7 +128,7 @@ fn part2(input: &Input) -> usize {
                     ALL_OPCODES
                         .iter()
                         .map(|opcode| (opcode, Instruction(*opcode, *a, *b, *c)))
-                        .filter(|(_, instruction)| &instruction.apply(before) == after)
+                        .filter(|(_, instruction)| &instruction.apply_to(before) == after)
                         .map(|(&opcode, _)| opcode)
                         .collect(),
                 )
@@ -250,7 +180,7 @@ fn part2(input: &Input) -> usize {
 
     let mut registers = vec![0, 0, 0, 0];
     for instruction in instructions {
-        registers = instruction.apply(&registers);
+        registers = instruction.apply_to(&registers);
     }
 
     registers[0]
