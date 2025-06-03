@@ -1,7 +1,8 @@
+use std::{cmp::Ordering, iter};
+
 use eyre::ContextCompat;
 use itertools::iproduct;
 use regex::Regex;
-use std::{cmp::Ordering, iter};
 
 type Pair = (i16, i16);
 

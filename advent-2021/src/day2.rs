@@ -1,5 +1,6 @@
-use eyre::{Context, ContextCompat, bail};
 use std::str::FromStr;
+
+use eyre::{Context, ContextCompat, bail};
 
 #[derive(Copy, Clone)]
 enum Command {

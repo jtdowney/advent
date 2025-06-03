@@ -84,7 +84,11 @@ fn run_computer_with_path(program: &[i64], path: &Path) -> String {
 
 fn explore_ship(program: &[i64]) -> Result<(Path, ItemLocations)> {
     let dangerous_items: HashSet<_> = [
-        "escape pod", "giant electromagnet", "infinite loop", "molten lava", "photons",
+        "escape pod",
+        "giant electromagnet",
+        "infinite loop",
+        "molten lava",
+        "photons",
     ]
     .iter()
     .map(|&s| s.to_string())

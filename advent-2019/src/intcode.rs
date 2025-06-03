@@ -93,9 +93,7 @@ fn read_parameter(state: &ComputerState, position: usize) -> i64 {
     match parse_mode(instruction, position) {
         ParameterMode::Position => state.memory[state.memory[source] as usize],
         ParameterMode::Immediate => state.memory[source],
-        ParameterMode::Relative => {
-            state.memory[(state.rb as i64 + state.memory[source]) as usize]
-        }
+        ParameterMode::Relative => state.memory[(state.rb as i64 + state.memory[source]) as usize],
     }
 }
 
@@ -152,12 +150,20 @@ pub fn step(mut state: ComputerState) -> (ComputerState, StepResult) {
         }
         5 => {
             let (cond, target) = (read_parameter(&state, 0), read_parameter(&state, 1));
-            state.ip = if cond != 0 { target as usize } else { state.ip + 3 };
+            state.ip = if cond != 0 {
+                target as usize
+            } else {
+                state.ip + 3
+            };
             (state, StepResult::Continue)
         }
         6 => {
             let (cond, target) = (read_parameter(&state, 0), read_parameter(&state, 1));
-            state.ip = if cond == 0 { target as usize } else { state.ip + 3 };
+            state.ip = if cond == 0 {
+                target as usize
+            } else {
+                state.ip + 3
+            };
             (state, StepResult::Continue)
         }
         7 => {
@@ -209,7 +215,9 @@ where
 }
 
 pub fn run_to_completion(state: ComputerState) -> (ComputerState, Vec<i64>) {
-    run_until(state, |r| matches!(r, StepResult::NeedInput | StepResult::Halted))
+    run_until(state, |r| {
+        matches!(r, StepResult::NeedInput | StepResult::Halted)
+    })
 }
 
 pub fn run_until_output(state: ComputerState) -> (ComputerState, Option<i64>) {
@@ -272,7 +280,7 @@ pub fn run_network_computer(
 ) -> (ComputerState, Vec<(i64, i64, i64)>) {
     let mut packets = Vec::new();
     let mut buffer = Vec::new();
-    
+
     for _ in 0..max_steps {
         if state.inputs.is_empty() {
             let (_, result) = step(state.clone());
@@ -296,7 +304,7 @@ pub fn run_network_computer(
             _ => break,
         }
     }
-    
+
     (state, packets)
 }
 

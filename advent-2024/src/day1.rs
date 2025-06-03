@@ -1,7 +1,6 @@
 use anyhow::Context;
-use itertools::Itertools;
-
 use aoc_runner_derive::{aoc, aoc_generator};
+use itertools::Itertools;
 
 #[aoc_generator(day1)]
 fn generator(input: &str) -> anyhow::Result<(Vec<i32>, Vec<i32>)> {

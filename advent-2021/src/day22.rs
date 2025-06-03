@@ -1,7 +1,8 @@
+use std::collections::HashSet;
+
 use eyre::ContextCompat;
 use itertools::iproduct;
 use regex::Regex;
-use std::collections::HashSet;
 
 type Point = (i64, i64, i64);
 type Input = Vec<(bool, (Point, Point))>;

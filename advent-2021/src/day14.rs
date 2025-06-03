@@ -1,6 +1,7 @@
+use std::{collections::HashMap, iter};
+
 use eyre::ContextCompat;
 use itertools::Itertools;
-use std::{collections::HashMap, iter};
 
 type Pair = (char, char);
 

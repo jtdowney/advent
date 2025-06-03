@@ -1,5 +1,6 @@
-use eyre::ContextCompat;
 use std::collections::HashMap;
+
+use eyre::ContextCompat;
 
 type Point = (i16, i16);
 type Line = (Point, Point);

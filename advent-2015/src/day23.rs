@@ -17,17 +17,13 @@ enum Instruction {
 }
 
 fn register(input: &str) -> IResult<&str, Register> {
-    use nom::character::complete::alpha1;
-    use nom::combinator::map_opt;
+    use nom::{character::complete::alpha1, combinator::map_opt};
 
     map_opt(alpha1, |s: &str| s.chars().next()).parse(input)
 }
 
 fn instruction(input: &str) -> IResult<&str, Instruction> {
-    use nom::branch::alt;
-    use nom::bytes::complete::tag;
-    use nom::combinator::map;
-    use nom::sequence::preceded;
+    use nom::{branch::alt, bytes::complete::tag, combinator::map, sequence::preceded};
 
     let offset = nom::character::complete::i32;
     let half = map(preceded(tag("hlf "), register), Instruction::Half);

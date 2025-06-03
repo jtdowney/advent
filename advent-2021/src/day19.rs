@@ -1,7 +1,8 @@
+use std::collections::{HashMap, HashSet, VecDeque};
+
 use eyre::ContextCompat;
 use itertools::{Itertools, iproduct};
 use nalgebra::{Matrix4, Point3, Transform3, Vector3, point};
-use std::collections::{HashMap, HashSet, VecDeque};
 
 type Point = Point3<f64>;
 

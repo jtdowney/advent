@@ -1,6 +1,7 @@
+use std::collections::HashMap;
+
 use eyre::ContextCompat;
 use itertools::Itertools;
-use std::collections::HashMap;
 
 #[aoc_generator(day21)]
 fn generator(input: &str) -> eyre::Result<Vec<u8>> {

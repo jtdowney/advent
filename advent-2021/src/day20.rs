@@ -1,6 +1,7 @@
+use std::{collections::HashMap, iter};
+
 use eyre::ContextCompat;
 use itertools::{Itertools, iproduct};
-use std::{collections::HashMap, iter};
 
 type Point = (i16, i16);
 

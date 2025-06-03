@@ -1,6 +1,7 @@
+use std::{ops::Add, str::FromStr};
+
 use eyre::bail;
 use itertools::Itertools;
-use std::{ops::Add, str::FromStr};
 
 #[derive(Clone, Debug, Default, PartialEq)]
 struct SnailNumber {

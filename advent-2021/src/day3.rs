@@ -1,5 +1,6 @@
-use itertools::Itertools;
 use std::collections::HashMap;
+
+use itertools::Itertools;
 
 #[aoc_generator(day3)]
 fn generator(input: &str) -> Vec<String> {

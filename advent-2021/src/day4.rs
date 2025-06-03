@@ -1,5 +1,6 @@
-use eyre::ContextCompat;
 use std::{collections::HashSet, num::ParseIntError};
+
+use eyre::ContextCompat;
 
 struct Input {
     numbers: Vec<u32>,

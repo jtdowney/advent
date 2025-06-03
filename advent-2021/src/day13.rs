@@ -1,5 +1,6 @@
-use eyre::{ContextCompat, bail};
 use std::{collections::HashSet, fmt::Write};
+
+use eyre::{ContextCompat, bail};
 
 type Point = (i16, i16);
 type Paper = HashSet<Point>;

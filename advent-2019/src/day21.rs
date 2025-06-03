@@ -4,7 +4,11 @@ use crate::intcode::{ComputerState, parse_program, run_ascii_program};
 
 fn run_springscript(program: &[i64], script: &[&str], command: &str) -> anyhow::Result<i64> {
     let state = ComputerState::new(program);
-    let lines = script.iter().copied().chain(std::iter::once(command)).collect::<Vec<_>>();
+    let lines = script
+        .iter()
+        .copied()
+        .chain(std::iter::once(command))
+        .collect::<Vec<_>>();
     run_ascii_program(state, &lines)
 }
 
@@ -15,15 +19,17 @@ fn generate(input: &str) -> anyhow::Result<Vec<i64>> {
 
 #[aoc(day21, part1)]
 fn part1(program: &[i64]) -> anyhow::Result<i64> {
-    let script = ["NOT A J", "NOT B T", "OR T J", "NOT C T", "OR T J", "AND D J"];
+    let script = [
+        "NOT A J", "NOT B T", "OR T J", "NOT C T", "OR T J", "AND D J",
+    ];
     run_springscript(program, &script, "WALK")
 }
 
 #[aoc(day21, part2)]
 fn part2(program: &[i64]) -> anyhow::Result<i64> {
     let script = [
-        "NOT A J", "NOT B T", "OR T J", "NOT C T", "OR T J", "AND D J", 
-        "NOT E T", "NOT T T", "OR H T", "AND T J",
+        "NOT A J", "NOT B T", "OR T J", "NOT C T", "OR T J", "AND D J", "NOT E T", "NOT T T",
+        "OR H T", "AND T J",
     ];
     run_springscript(program, &script, "RUN")
 }
@@ -42,17 +48,19 @@ mod tests {
 
     #[test]
     fn test_part1_script_structure() {
-        let script = ["NOT A J", "NOT B T", "OR T J", "NOT C T", "OR T J", "AND D J"];
+        let script = [
+            "NOT A J", "NOT B T", "OR T J", "NOT C T", "OR T J", "AND D J",
+        ];
         assert_eq!(script.len(), 6);
         assert!(script[0].contains("NOT A J"));
-        assert!(script[script.len()-1].contains("AND D J"));
+        assert!(script[script.len() - 1].contains("AND D J"));
     }
 
     #[test]
     fn test_part2_script_structure() {
         let script = [
-            "NOT A J", "NOT B T", "OR T J", "NOT C T", "OR T J", "AND D J",
-            "NOT E T", "NOT T T", "OR H T", "AND T J",
+            "NOT A J", "NOT B T", "OR T J", "NOT C T", "OR T J", "AND D J", "NOT E T", "NOT T T",
+            "OR H T", "AND T J",
         ];
         assert_eq!(script.len(), 10);
         assert!(script.iter().any(|&s| s.contains("E")));

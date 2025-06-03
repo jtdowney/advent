@@ -1,5 +1,6 @@
-use itertools::Itertools;
 use std::collections::HashSet;
+
+use itertools::Itertools;
 
 type Numeral = HashSet<char>;
 

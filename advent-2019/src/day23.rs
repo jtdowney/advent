@@ -159,7 +159,7 @@ mod tests {
         let mut network = Network::new(&program);
 
         network.run_round().unwrap();
-        
+
         let all_computers_halted = network.computers.iter().all(|computer| {
             let (_, result) = step(computer.clone());
             result == StepResult::Halted
