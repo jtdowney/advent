@@ -3,6 +3,8 @@ use std::{
     sync::LazyLock,
 };
 
+use anyhow::{Context, Result};
+
 type Passport = HashMap<String, String>;
 
 static REQUIRED_KEYS: LazyLock<HashSet<&'static str>> = LazyLock::new(|| {
@@ -70,7 +72,7 @@ fn part2_validator(passport: &Passport) -> bool {
                         false
                     }
                 }
-                _ => unreachable!(),
+                _ => unreachable!("Invalid key: {}", key),
             })
             .unwrap_or_default()
     })
@@ -87,17 +89,25 @@ where
 }
 
 #[aoc_generator(day4)]
-fn generator(input: &str) -> Vec<Passport> {
+fn generator(input: &str) -> Result<Vec<Passport>> {
     input
         .split("\n\n")
         .map(|row| {
             row.split_whitespace()
-                .fold(Passport::new(), |mut acc, part| {
+                .try_fold(Passport::new(), |mut acc, part| {
                     let mut values = part.split(':');
-                    let key = values.next().unwrap().to_string();
-                    let value = values.next().unwrap().to_string();
+                    let key = values
+                        .next()
+                        .with_context(|| format!("Missing key in part: '{}'", part))?
+                        .to_string();
+                    let value = values
+                        .next()
+                        .with_context(|| {
+                            format!("Missing value for key '{}' in part: '{}'", key, part)
+                        })?
+                        .to_string();
                     acc.insert(key, value);
-                    acc
+                    Ok(acc)
                 })
         })
         .collect()

@@ -1,6 +1,8 @@
 use std::{collections::HashMap, iter};
 
-fn solve(target_round: usize, seen: &HashMap<usize, usize>) -> usize {
+use anyhow::{Context, Result};
+
+fn solve(target_round: usize, seen: &HashMap<usize, usize>) -> Result<usize> {
     let mut seen = seen.clone();
     let target = target_round - seen.len();
 
@@ -18,26 +20,28 @@ fn solve(target_round: usize, seen: &HashMap<usize, usize>) -> usize {
     })
     .take(target)
     .last()
-    .unwrap()
+    .context("Failed to calculate final number")
 }
 
 #[aoc_generator(day15)]
-fn generator(input: &str) -> HashMap<usize, usize> {
+fn generator(input: &str) -> Result<HashMap<usize, usize>> {
     input
         .split(',')
-        .map(str::parse)
-        .map(Result::unwrap)
+        .map(|s| {
+            s.parse::<usize>()
+                .with_context(|| format!("Failed to parse number: '{}'", s))
+        })
         .enumerate()
-        .map(|(i, s)| (s, i))
-        .collect::<HashMap<usize, usize>>()
+        .map(|(i, r)| r.map(|s| (s, i)))
+        .collect()
 }
 
 #[aoc(day15, part1)]
-fn part1(seen: &HashMap<usize, usize>) -> usize {
+fn part1(seen: &HashMap<usize, usize>) -> Result<usize> {
     solve(2020, seen)
 }
 
 #[aoc(day15, part2)]
-fn part2(seen: &HashMap<usize, usize>) -> usize {
+fn part2(seen: &HashMap<usize, usize>) -> Result<usize> {
     solve(30000000, seen)
 }

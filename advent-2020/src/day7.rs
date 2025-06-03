@@ -1,5 +1,6 @@
 use std::collections::{HashMap, VecDeque};
 
+use anyhow::{Context, Result};
 use regex::Regex;
 
 const SEARCH: &str = "shiny gold";
@@ -10,26 +11,34 @@ struct Rule {
 }
 
 #[aoc_generator(day7)]
-fn generator(input: &str) -> HashMap<String, Vec<Rule>> {
-    let name_re = Regex::new(r"^(.+) bags contain").unwrap();
-    let rule_re = Regex::new(r"(\d+) (.+?) bags?").unwrap();
+fn generator(input: &str) -> Result<HashMap<String, Vec<Rule>>> {
+    let name_re = Regex::new(r"^(.+) bags contain").context("Failed to compile name regex")?;
+    let rule_re = Regex::new(r"(\d+) (.+?) bags?").context("Failed to compile rule regex")?;
     input
         .lines()
         .map(|line| {
-            let name_match = name_re.captures(line).unwrap();
-            let name = name_match.get(1).map(|m| m.as_str().to_string()).unwrap();
+            let name_match = name_re
+                .captures(line)
+                .with_context(|| format!("Failed to match bag name in line: '{}'", line))?;
+            let name = name_match
+                .get(1)
+                .map(|m| m.as_str().to_string())
+                .context("No bag name found")?;
             let rules = rule_re
                 .captures_iter(line)
                 .map(|rule_capture| {
                     let count = rule_capture
                         .get(1)
                         .and_then(|m| m.as_str().parse().ok())
-                        .unwrap();
-                    let name = rule_capture.get(2).map(|m| m.as_str().to_string()).unwrap();
-                    Rule { count, name }
+                        .with_context(|| format!("Failed to parse count in line: '{}'", line))?;
+                    let name = rule_capture
+                        .get(2)
+                        .map(|m| m.as_str().to_string())
+                        .context("No rule name found")?;
+                    Ok(Rule { count, name })
                 })
-                .collect();
-            (name, rules)
+                .collect::<Result<Vec<_>>>()?;
+            Ok((name, rules))
         })
         .collect()
 }

@@ -1,3 +1,4 @@
+use anyhow::{Context, Result};
 use num_integer::Integer;
 
 struct State {
@@ -6,20 +7,22 @@ struct State {
 }
 
 #[aoc_generator(day13)]
-fn generator(input: &str) -> State {
+fn generator(input: &str) -> Result<State> {
     let mut lines = input.lines();
-    let start_time = lines.next().and_then(|l| l.parse().ok()).unwrap();
+    let start_time = lines
+        .next()
+        .context("Missing start time")?
+        .parse()
+        .context("Failed to parse start time")?;
     let busses = lines
         .next()
-        .map(|l| {
-            l.split(',')
-                .enumerate()
-                .filter_map(|(i, n)| n.parse().ok().map(|n| (i as i64, n)))
-                .collect::<Vec<(i64, i64)>>()
-        })
-        .unwrap();
+        .context("Missing bus schedule")?
+        .split(',')
+        .enumerate()
+        .filter_map(|(i, n)| n.parse().ok().map(|n| (i as i64, n)))
+        .collect::<Vec<(i64, i64)>>();
 
-    State { start_time, busses }
+    Ok(State { start_time, busses })
 }
 
 #[aoc(day13, part1)]
@@ -33,7 +36,7 @@ fn part1(state: &State) -> i64 {
                 .find(|&(_, b)| t.gcd(&b) != 1)
                 .map(|(_, b)| (b, t))
         })
-        .unwrap();
+        .expect("No valid bus found");
 
     (end_time - state.start_time) * bus
 }

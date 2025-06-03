@@ -1,3 +1,4 @@
+use anyhow::{Context, Result};
 use regex::Regex;
 
 type PasswordRule = (usize, usize, char);
@@ -7,19 +8,28 @@ struct Entry {
 }
 
 #[aoc_generator(day2)]
-fn generator(input: &str) -> Vec<Entry> {
-    let re = Regex::new(r"(\d+)-(\d+) (\w): (\w+)").unwrap();
+fn generator(input: &str) -> Result<Vec<Entry>> {
+    let re = Regex::new(r"(\d+)-(\d+) (\w): (\w+)").context("Failed to compile regex")?;
     input
         .lines()
         .map(|line| {
-            let captures = re.captures(line).unwrap();
+            let captures = re
+                .captures(line)
+                .with_context(|| format!("Failed to parse line: '{}'", line))?;
 
-            let a = captures[1].parse().unwrap();
-            let b = captures[2].parse().unwrap();
-            let letter = captures[3].chars().next().unwrap();
+            let a = captures[1]
+                .parse()
+                .with_context(|| format!("Failed to parse first number in line: '{}'", line))?;
+            let b = captures[2]
+                .parse()
+                .with_context(|| format!("Failed to parse second number in line: '{}'", line))?;
+            let letter = captures[3]
+                .chars()
+                .next()
+                .with_context(|| format!("Failed to get letter in line: '{}'", line))?;
             let password = captures[4].to_string();
             let rule = (a, b, letter);
-            Entry { rule, password }
+            Ok(Entry { rule, password })
         })
         .collect()
 }

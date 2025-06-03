@@ -1,5 +1,7 @@
 use std::{collections::HashMap, iter, ops::Index};
 
+use anyhow::{Context, Result, bail};
+
 type Point = (usize, usize);
 const ORIGIN: Point = (0, 0);
 
@@ -16,14 +18,22 @@ struct Grid {
 }
 
 impl Grid {
-    fn new(pattern: HashMap<Point, Square>) -> Self {
-        let pattern_width = pattern.keys().map(|&(x, _)| x).max().unwrap();
-        let pattern_height = pattern.keys().map(|&(_, y)| y).max().unwrap();
-        Self {
+    fn new(pattern: HashMap<Point, Square>) -> Result<Self> {
+        let pattern_width = pattern
+            .keys()
+            .map(|&(x, _)| x)
+            .max()
+            .context("Grid has no width")?;
+        let pattern_height = pattern
+            .keys()
+            .map(|&(_, y)| y)
+            .max()
+            .context("Grid has no height")?;
+        Ok(Self {
             pattern,
             pattern_width,
             pattern_height,
-        }
+        })
     }
 }
 
@@ -37,24 +47,19 @@ impl Index<Point> for Grid {
 }
 
 #[aoc_generator(day3)]
-fn generator(input: &str) -> Grid {
-    let pattern = input
-        .lines()
-        .enumerate()
-        .flat_map(|(y, line)| {
-            line.chars()
-                .enumerate()
-                .map(move |(x, ch)| {
-                    let square = match ch {
-                        '#' => Square::Tree,
-                        '.' => Square::Open,
-                        _ => unreachable!(),
-                    };
-                    ((x, y), square)
-                })
-                .collect::<HashMap<_, _>>()
-        })
-        .collect();
+fn generator(input: &str) -> Result<Grid> {
+    let mut pattern = HashMap::new();
+
+    for (y, line) in input.lines().enumerate() {
+        for (x, ch) in line.chars().enumerate() {
+            let square = match ch {
+                '#' => Square::Tree,
+                '.' => Square::Open,
+                _ => bail!("Invalid character '{}' at position ({}, {})", ch, x, y),
+            };
+            pattern.insert((x, y), square);
+        }
+    }
 
     Grid::new(pattern)
 }

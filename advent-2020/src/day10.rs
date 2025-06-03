@@ -1,15 +1,18 @@
 use std::collections::HashMap;
 
-use itertools::Itertools;
+use anyhow::{Context, Result};
 
 #[aoc_generator(day10)]
-fn generator(input: &str) -> Vec<usize> {
-    input
+fn generator(input: &str) -> Result<Vec<usize>> {
+    let mut numbers = input
         .lines()
-        .map(str::parse)
-        .map(Result::unwrap)
-        .sorted()
-        .collect()
+        .map(|line| {
+            line.parse::<usize>()
+                .with_context(|| format!("Failed to parse number: '{}'", line))
+        })
+        .collect::<Result<Vec<_>>>()?;
+    numbers.sort_unstable();
+    Ok(numbers)
 }
 
 #[aoc(day10, part1)]
@@ -36,8 +39,8 @@ fn part1(input: &[usize]) -> usize {
 }
 
 #[aoc(day10, part2)]
-fn part2(input: &[usize]) -> u64 {
-    let goal = input.last().unwrap();
+fn part2(input: &[usize]) -> Result<u64> {
+    let goal = input.last().context("Input is empty")?;
     let mut cache = HashMap::new();
 
     for &i in input {
@@ -57,5 +60,8 @@ fn part2(input: &[usize]) -> u64 {
         cache.entry(i).and_modify(|v| *v += total);
     }
 
-    cache[goal]
+    cache
+        .get(goal)
+        .copied()
+        .context("Goal adapter not found in cache")
 }

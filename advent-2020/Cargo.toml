@@ -5,6 +5,7 @@ authors = ["John Downey <jdowney@gmail.com>"]
 edition = "2024"
 
 [dependencies]
+anyhow = "1"
 aoc-runner = "0.3.0"
 aoc-runner-derive = "0.3.0"
 itertools = "0.14.0"

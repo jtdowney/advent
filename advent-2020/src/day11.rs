@@ -1,5 +1,7 @@
 use std::{collections::HashMap, iter};
 
+use anyhow::{Context, Result};
+
 type Point = (isize, isize);
 
 const NEIGHBORS: [Point; 8] = [
@@ -111,7 +113,7 @@ where
 }
 
 #[aoc_generator(day11)]
-fn generator(input: &str) -> SeatingArea {
+fn generator(input: &str) -> Result<SeatingArea> {
     let seats = input
         .lines()
         .enumerate()
@@ -123,13 +125,21 @@ fn generator(input: &str) -> SeatingArea {
         })
         .collect::<HashMap<Point, Seat>>();
 
-    let width = seats.keys().map(|&(x, _)| x).max().unwrap();
-    let height = seats.keys().map(|&(_, y)| y).max().unwrap();
-    SeatingArea {
+    let width = seats
+        .keys()
+        .map(|&(x, _)| x)
+        .max()
+        .context("No seats found in input")?;
+    let height = seats
+        .keys()
+        .map(|&(_, y)| y)
+        .max()
+        .context("No seats found in input")?;
+    Ok(SeatingArea {
         seats,
         width,
         height,
-    }
+    })
 }
 
 #[aoc(day11, part1)]

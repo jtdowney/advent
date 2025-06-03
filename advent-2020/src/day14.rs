@@ -3,6 +3,8 @@ use std::{
     str::{self, FromStr},
 };
 
+use anyhow::{Context, Result, bail, ensure};
+
 #[derive(Debug)]
 enum Instruction {
     Mask(String),
@@ -16,18 +18,27 @@ struct State {
 }
 
 impl FromStr for Instruction {
-    type Err = ();
+    type Err = anyhow::Error;
 
     fn from_str(value: &str) -> Result<Self, Self::Err> {
         let parts = value.split('=').map(str::trim).collect::<Vec<&str>>();
+        ensure!(parts.len() == 2, "Invalid instruction format: {}", value);
+
         let instruction = if parts[0].starts_with("mem[") {
-            let end = parts[0].bytes().position(|b| b == b']').unwrap();
-            let address = parts[0][4..end].parse().unwrap();
-            let value = parts[1].parse().unwrap();
+            let end = parts[0]
+                .bytes()
+                .position(|b| b == b']')
+                .context("Missing closing bracket in memory instruction")?;
+            let address = parts[0][4..end]
+                .parse()
+                .context("Failed to parse memory address")?;
+            let value = parts[1].parse().context("Failed to parse memory value")?;
             Instruction::Memory(address, value)
-        } else {
+        } else if parts[0] == "mask" {
             let value = parts[1].to_string();
             Instruction::Mask(value)
+        } else {
+            bail!("Unknown instruction type: {}", parts[0])
         };
 
         Ok(instruction)
@@ -35,12 +46,12 @@ impl FromStr for Instruction {
 }
 
 #[aoc_generator(day14)]
-fn generator(input: &str) -> Vec<Instruction> {
+fn generator(input: &str) -> Result<Vec<Instruction>> {
     input
         .lines()
         .map(str::parse)
-        .collect::<Result<_, _>>()
-        .unwrap()
+        .collect::<Result<Vec<_>, _>>()
+        .context("Failed to parse instructions")
 }
 
 #[aoc(day14, part1)]
@@ -62,7 +73,8 @@ fn part1(instructions: &[Instruction]) -> u64 {
                         .map(|(m, v)| if m == 'X' { v } else { m })
                         .collect::<String>();
 
-                    let masked_value = u64::from_str_radix(&result, 2).unwrap();
+                    let masked_value = u64::from_str_radix(&result, 2)
+                        .expect("Invalid binary string after masking");
                     *state.memory.entry(*address).or_default() = masked_value;
                     state
                 }

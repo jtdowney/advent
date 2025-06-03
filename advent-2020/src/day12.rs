@@ -1,4 +1,6 @@
-use std::{num::ParseIntError, ops::Add, str::FromStr};
+use std::{ops::Add, str::FromStr};
+
+use anyhow::{Context, Result, bail};
 
 #[derive(Copy, Clone)]
 enum Action {
@@ -12,7 +14,7 @@ enum Action {
 }
 
 impl FromStr for Action {
-    type Err = ();
+    type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let instruction = match s {
@@ -23,7 +25,7 @@ impl FromStr for Action {
             "L" => Action::Left,
             "R" => Action::Right,
             "F" => Action::Forward,
-            _ => unreachable!(),
+            _ => bail!("Unknown action: {}", s),
         };
 
         Ok(instruction)
@@ -34,12 +36,12 @@ impl FromStr for Action {
 struct Instruction(Action, i32);
 
 impl FromStr for Instruction {
-    type Err = ParseIntError;
+    type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (a, b) = s.split_at(1);
-        let action = a.parse().unwrap();
-        let argument = b.parse()?;
+        let action = a.parse().context("Failed to parse action")?;
+        let argument = b.parse().context("Failed to parse argument")?;
         let operation = Instruction(action, argument);
         Ok(operation)
     }
@@ -71,7 +73,7 @@ impl Point {
             90 | -270 => Point(-y, x),
             180 | -180 => Point(-x, -y),
             270 | -90 => Point(y, -x),
-            _ => unreachable!(),
+            _ => unreachable!("Invalid rotation: {}", degrees),
         }
     }
 }
@@ -109,12 +111,12 @@ impl Add<Instruction> for Ship {
 }
 
 #[aoc_generator(day12)]
-fn generator(input: &str) -> Vec<Instruction> {
+fn generator(input: &str) -> Result<Vec<Instruction>> {
     input
         .lines()
         .map(str::parse)
-        .collect::<Result<_, _>>()
-        .unwrap()
+        .collect::<Result<Vec<_>, _>>()
+        .context("Failed to parse instructions")
 }
 
 #[aoc(day12, part1)]

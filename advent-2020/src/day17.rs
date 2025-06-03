@@ -1,5 +1,6 @@
 use std::{collections::HashSet, iter};
 
+use anyhow::{Context, Result};
 use itertools::{Itertools, iproduct};
 
 const STEPS: usize = 7;
@@ -10,35 +11,35 @@ struct Dimension {
 }
 
 impl Dimension {
-    fn step(&self) -> Dimension {
+    fn step(&self) -> Result<Dimension> {
         let (min_x, max_x) = self
             .active_cells
             .iter()
             .map(|(x, _, _, _)| x)
             .minmax()
             .into_option()
-            .unwrap();
+            .context("No active cells for x dimension")?;
         let (min_y, max_y) = self
             .active_cells
             .iter()
             .map(|(_, y, _, _)| y)
             .minmax()
             .into_option()
-            .unwrap();
+            .context("No active cells for y dimension")?;
         let (min_z, max_z) = self
             .active_cells
             .iter()
             .map(|(_, _, z, _)| z)
             .minmax()
             .into_option()
-            .unwrap();
+            .context("No active cells for z dimension")?;
         let (min_w, max_w) = self
             .active_cells
             .iter()
             .map(|(_, _, _, w)| w)
             .minmax()
             .into_option()
-            .unwrap();
+            .context("No active cells for w dimension")?;
 
         let neighbors = iproduct!(-1..=1, -1..=1, -1..=1, -1..=1)
             .filter(|&point| point != (0, 0, 0, 0))
@@ -65,7 +66,7 @@ impl Dimension {
         })
         .collect();
 
-        Dimension { active_cells }
+        Ok(Dimension { active_cells })
     }
 }
 
@@ -88,32 +89,35 @@ fn generator(input: &str) -> Dimension {
 }
 
 #[aoc(day17, part1)]
-fn part1(start: &Dimension) -> usize {
+fn part1(start: &Dimension) -> Result<usize> {
     let start = start.clone();
-    let dimension = iter::successors(Some(start), |prev| {
-        let active_cells = prev
-            .step()
-            .active_cells
-            .iter()
-            .copied()
-            .filter(|&(_, _, _, w)| w == 0)
-            .collect();
-        Some(Dimension { active_cells })
+    let dimension = iter::successors(Some(Ok(start)), |prev| {
+        prev.as_ref().ok().map(|p| {
+            p.step().map(|dim| {
+                let active_cells = dim
+                    .active_cells
+                    .iter()
+                    .copied()
+                    .filter(|&(_, _, _, w)| w == 0)
+                    .collect();
+                Dimension { active_cells }
+            })
+        })
     })
     .take(STEPS)
     .last()
-    .unwrap();
+    .context("Failed to run simulation")??;
 
-    dimension.active_cells.len()
+    Ok(dimension.active_cells.len())
 }
 
 #[aoc(day17, part2)]
-fn part2(start: &Dimension) -> usize {
+fn part2(start: &Dimension) -> Result<usize> {
     let start = start.clone();
-    let dimension = iter::successors(Some(start), |prev| Some(prev.step()))
+    let dimension = iter::successors(Some(Ok(start)), |prev| prev.as_ref().ok().map(|p| p.step()))
         .take(STEPS)
         .last()
-        .unwrap();
+        .context("Failed to run simulation")??;
 
-    dimension.active_cells.len()
+    Ok(dimension.active_cells.len())
 }

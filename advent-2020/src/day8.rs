@@ -1,4 +1,6 @@
-use std::{collections::HashSet, num::ParseIntError, str::FromStr};
+use std::{collections::HashSet, str::FromStr};
+
+use anyhow::{Context, Result, bail};
 
 #[derive(Copy, Clone, Default)]
 struct Environment {
@@ -14,14 +16,14 @@ enum Instruction {
 }
 
 impl FromStr for Instruction {
-    type Err = ();
+    type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let instruction = match s {
             "acc" => Instruction::Increment,
             "nop" => Instruction::NoOperation,
             "jmp" => Instruction::Jump,
-            _ => unreachable!(),
+            _ => bail!("Unknown instruction: '{}'", s),
         };
 
         Ok(instruction)
@@ -55,12 +57,18 @@ impl Operation {
 }
 
 impl FromStr for Operation {
-    type Err = ParseIntError;
+    type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut parts = s.split_whitespace();
-        let instruction = parts.next().and_then(|i| i.parse().ok()).unwrap();
-        let argument = parts.next().map(|i| i.parse()).unwrap()?;
+        let instruction = parts.next().context("Missing instruction")?;
+        let instruction = instruction
+            .parse()
+            .with_context(|| format!("Failed to parse instruction: '{}'", instruction))?;
+        let argument = parts.next().context("Missing argument")?;
+        let argument = argument
+            .parse()
+            .with_context(|| format!("Failed to parse argument: '{}'", argument))?;
 
         let operation = Operation {
             instruction,
@@ -72,12 +80,14 @@ impl FromStr for Operation {
 }
 
 #[aoc_generator(day8)]
-fn generator(input: &str) -> Vec<Operation> {
+fn generator(input: &str) -> Result<Vec<Operation>> {
     input
         .lines()
-        .map(str::parse)
-        .collect::<Result<_, _>>()
-        .unwrap()
+        .map(|line| {
+            line.parse::<Operation>()
+                .with_context(|| format!("Failed to parse operation: '{}'", line))
+        })
+        .collect()
 }
 
 #[aoc(day8, part1)]
