@@ -1,7 +1,7 @@
 use std::{collections::HashMap, iter};
 
+use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
-use eyre::eyre;
 use itertools::{Itertools, iproduct};
 use nom::{
     Finish, IResult, Parser,
@@ -70,13 +70,13 @@ fn compute_distances(names: &[String], connections: &[Vec<String>]) -> HashMap<(
 }
 
 #[aoc_generator(day16)]
-fn generator(input: &str) -> eyre::Result<Input> {
+fn generator(input: &str) -> anyhow::Result<Input> {
     let mut result = input
         .lines()
         .map(|line| {
             parse_valve(line)
                 .finish()
-                .map_err(|e| eyre!("Error parsing {}: {}", line, e))
+                .map_err(|e| anyhow!("Error parsing {}: {}", line, e))
                 .map(|(_, o)| o)
         })
         .try_fold(Input::default(), |mut acc, item| {
@@ -84,7 +84,7 @@ fn generator(input: &str) -> eyre::Result<Input> {
             acc.names.push(name);
             acc.flow_rates.push(flow_rate);
             acc.connections.push(connections);
-            Ok::<_, eyre::Report>(acc)
+            Ok::<_, anyhow::Error>(acc)
         })?;
     result.distances = compute_distances(&result.names, &result.connections);
     Ok(result)

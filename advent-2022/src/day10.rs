@@ -1,6 +1,6 @@
 use advent_of_code_ocr as aoc_ocr;
+use anyhow::bail;
 use aoc_runner_derive::{aoc, aoc_generator};
-use eyre::bail;
 use itertools::iproduct;
 use nom::{
     IResult, Parser,
@@ -26,7 +26,7 @@ fn parse_instruction(input: &str) -> IResult<&str, Instruction> {
 }
 
 #[aoc_generator(day10)]
-fn generator(input: &str) -> eyre::Result<Vec<Instruction>> {
+fn generator(input: &str) -> anyhow::Result<Vec<Instruction>> {
     input
         .lines()
         .map(|line| match parse_instruction(line) {

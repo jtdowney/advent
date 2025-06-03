@@ -1,6 +1,6 @@
 use std::{collections::HashSet, fmt::Write};
 
-use eyre::{ContextCompat, bail};
+use anyhow::{Context, bail};
 
 type Point = (i16, i16);
 type Paper = HashSet<Point>;
@@ -18,7 +18,7 @@ struct Input {
 }
 
 #[aoc_generator(day13)]
-fn generator(input: &str) -> eyre::Result<Input> {
+fn generator(input: &str) -> anyhow::Result<Input> {
     let paper = input
         .lines()
         .take_while(|line| !line.is_empty())
@@ -29,7 +29,7 @@ fn generator(input: &str) -> eyre::Result<Input> {
 
             Ok((x, y))
         })
-        .collect::<eyre::Result<Paper>>()?;
+        .collect::<anyhow::Result<Paper>>()?;
 
     let folds = input
         .lines()
@@ -46,7 +46,7 @@ fn generator(input: &str) -> eyre::Result<Input> {
 
             Ok(fold)
         })
-        .collect::<eyre::Result<Vec<Fold>>>()?;
+        .collect::<anyhow::Result<Vec<Fold>>>()?;
 
     Ok(Input { paper, folds })
 }
@@ -71,7 +71,7 @@ fn solve(input: &Input) -> impl Iterator<Item = Paper> + '_ {
 }
 
 #[aoc(day13, part1)]
-fn part1(input: &Input) -> eyre::Result<usize> {
+fn part1(input: &Input) -> anyhow::Result<usize> {
     Ok(solve(input)
         .next()
         .context("unable to find solution")?
@@ -79,7 +79,7 @@ fn part1(input: &Input) -> eyre::Result<usize> {
 }
 
 #[aoc(day13, part2)]
-fn part2(input: &Input) -> eyre::Result<String> {
+fn part2(input: &Input) -> anyhow::Result<String> {
     let paper = solve(input).last().context("unable to find solution")?;
 
     let &(maxx, _) = paper

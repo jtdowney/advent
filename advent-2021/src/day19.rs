@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
-use eyre::ContextCompat;
+use anyhow::Context;
 use itertools::{Itertools, iproduct};
 use nalgebra::{Matrix4, Point3, Transform3, Vector3, point};
 
@@ -98,10 +98,10 @@ struct Input {
 }
 
 #[aoc_generator(day19)]
-fn generator(input: &str) -> eyre::Result<Input> {
+fn generator(input: &str) -> anyhow::Result<Input> {
     let scanners: Vec<Scanner> = input
         .lines()
-        .try_fold::<_, _, eyre::Result<Vec<Vec<Point>>>>(vec![], |mut acc, line| {
+        .try_fold::<_, _, anyhow::Result<Vec<Vec<Point>>>>(vec![], |mut acc, line| {
             if line.is_empty() {
                 return Ok(acc);
             }

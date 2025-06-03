@@ -1,4 +1,4 @@
-use eyre::eyre;
+use anyhow::anyhow;
 use nom::{
     Finish, IResult, Parser,
     bits::{bits, complete::take},
@@ -176,14 +176,14 @@ fn parse_packet(input: &[u8]) -> IResult<&[u8], Packet> {
 }
 
 #[aoc_generator(day16)]
-fn generator(input: &str) -> eyre::Result<Packet> {
+fn generator(input: &str) -> anyhow::Result<Packet> {
     let (_, data) = hex_string(input)
         .finish()
-        .map_err(|_| eyre!("unable to parse hex"))?;
+        .map_err(|_| anyhow!("unable to parse hex"))?;
 
     let (_, packet) = parse_packet(&data)
         .finish()
-        .map_err(|_| eyre!("unable to parse packets"))?;
+        .map_err(|_| anyhow!("unable to parse packets"))?;
 
     Ok(packet)
 }

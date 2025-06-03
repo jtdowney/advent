@@ -1,6 +1,6 @@
 use std::{ops::Add, str::FromStr};
 
-use eyre::bail;
+use anyhow::bail;
 use itertools::Itertools;
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -112,7 +112,7 @@ impl From<ParserState> for SnailNumber {
 }
 
 impl FromStr for SnailNumber {
-    type Err = eyre::Report;
+    type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let state = s.chars().try_fold(ParserState::default(), |mut state, c| {
@@ -135,7 +135,7 @@ impl FromStr for SnailNumber {
 }
 
 #[aoc_generator(day18)]
-fn generator(input: &str) -> eyre::Result<Vec<SnailNumber>> {
+fn generator(input: &str) -> anyhow::Result<Vec<SnailNumber>> {
     input.lines().map(str::parse).collect()
 }
 
@@ -165,7 +165,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_parser() -> eyre::Result<()> {
+    fn test_parser() -> anyhow::Result<()> {
         let actual: SnailNumber = "[[1,[2,3]],[[4,5],6]]".parse()?;
         let expected = SnailNumber {
             values: vec![1, 2, 3, 4, 5, 6],
@@ -177,7 +177,7 @@ mod tests {
     }
 
     #[test]
-    fn test_expode() -> eyre::Result<()> {
+    fn test_expode() -> anyhow::Result<()> {
         let expected: SnailNumber = "[[[[0,9],2],3],4]".parse()?;
         let mut number: SnailNumber = "[[[[[9,8],1],2],3],4]".parse()?;
         assert!(number.explode());
@@ -207,7 +207,7 @@ mod tests {
     }
 
     #[test]
-    fn test_split() -> eyre::Result<()> {
+    fn test_split() -> anyhow::Result<()> {
         let expected: SnailNumber = "[[5,5],1]".parse()?;
         let mut number: SnailNumber = "[10,1]".parse()?;
         assert!(number.split());
@@ -217,7 +217,7 @@ mod tests {
     }
 
     #[test]
-    fn test_add() -> eyre::Result<()> {
+    fn test_add() -> anyhow::Result<()> {
         let left: SnailNumber = "[[[[4,3],4],4],[7,[[8,4],9]]]".parse()?;
         let right: SnailNumber = "[1,1]".parse()?;
         let actual = left + right;
@@ -229,7 +229,7 @@ mod tests {
     }
 
     #[test]
-    fn test_add_example() -> eyre::Result<()> {
+    fn test_add_example() -> anyhow::Result<()> {
         let input = "[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]
 [7,[[[3,7],[4,3]],[[6,3],[8,8]]]]
 [[2,[[0,8],[3,4]]],[[[6,7],1],[7,[1,6]]]]
@@ -254,7 +254,7 @@ mod tests {
     }
 
     #[test]
-    fn test_magnitude() -> eyre::Result<()> {
+    fn test_magnitude() -> anyhow::Result<()> {
         let number: SnailNumber = "[[1,2],[[3,4],5]]".parse()?;
         assert_eq!(number.magnitude(), 143);
 

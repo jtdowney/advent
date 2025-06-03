@@ -1,7 +1,7 @@
 use std::{collections::HashSet, iter};
 
+use anyhow::bail;
 use aoc_runner_derive::{aoc, aoc_generator};
-use eyre::bail;
 use nom::{
     IResult, Parser,
     branch::alt,
@@ -61,7 +61,7 @@ fn parse_instruction(input: &str) -> IResult<&str, Instruction> {
 }
 
 #[aoc_generator(day9)]
-fn generator(input: &str) -> eyre::Result<Vec<Instruction>> {
+fn generator(input: &str) -> anyhow::Result<Vec<Instruction>> {
     input
         .lines()
         .map(|line| match parse_instruction(line) {

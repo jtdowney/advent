@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 
+use anyhow::bail;
 use aoc_runner_derive::{aoc, aoc_generator};
-use eyre::bail;
 use itertools::Itertools;
 use nom::{
     IResult, Parser,
@@ -98,7 +98,7 @@ fn parse_monkey(input: &str) -> IResult<&str, Monkey> {
 }
 
 #[aoc_generator(day11)]
-fn generator(input: &str) -> eyre::Result<Vec<Monkey>> {
+fn generator(input: &str) -> anyhow::Result<Vec<Monkey>> {
     input
         .split("\n\n")
         .map(|part| match parse_monkey(part) {

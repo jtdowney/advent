@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 
+use anyhow::bail;
 use aoc_runner_derive::{aoc, aoc_generator};
-use eyre::bail;
 use nom::{
     IResult, Parser,
     branch::alt,
@@ -53,7 +53,7 @@ fn parse_input(input: &str) -> IResult<&str, Vec<(Packet, Packet)>> {
 }
 
 #[aoc_generator(day13)]
-fn generator(input: &str) -> eyre::Result<Vec<(Packet, Packet)>> {
+fn generator(input: &str) -> anyhow::Result<Vec<(Packet, Packet)>> {
     match parse_input(input) {
         Ok((_, i)) => Ok(i),
         Err(e) => bail!("error parsing: {}", e),

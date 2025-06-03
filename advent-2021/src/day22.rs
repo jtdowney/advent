@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use eyre::ContextCompat;
+use anyhow::Context;
 use itertools::iproduct;
 use regex::Regex;
 
@@ -8,7 +8,7 @@ type Point = (i64, i64, i64);
 type Input = Vec<(bool, (Point, Point))>;
 
 #[aoc_generator(day22)]
-fn generator(input: &str) -> eyre::Result<Input> {
+fn generator(input: &str) -> anyhow::Result<Input> {
     let re = Regex::new(
         r"(?P<state>on|off) x=(?P<x1>-?\d+)..(?P<x2>-?\d+),y=(?P<y1>-?\d+)..(?P<y2>-?\d+),z=(?P<z1>-?\d+)..(?P<z2>-?\d+)",
     )?;

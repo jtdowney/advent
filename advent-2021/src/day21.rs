@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
-use eyre::ContextCompat;
+use anyhow::Context;
 use itertools::Itertools;
 
 #[aoc_generator(day21)]
-fn generator(input: &str) -> eyre::Result<Vec<u8>> {
+fn generator(input: &str) -> anyhow::Result<Vec<u8>> {
     input
         .lines()
         .map(|line| {

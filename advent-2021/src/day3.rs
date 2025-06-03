@@ -8,7 +8,7 @@ fn generator(input: &str) -> Vec<String> {
 }
 
 #[aoc(day3, part1)]
-fn part1(input: &[String]) -> eyre::Result<u32> {
+fn part1(input: &[String]) -> anyhow::Result<u32> {
     let input = (0..)
         .map_while(|i| {
             let counts = input
@@ -44,7 +44,7 @@ fn part1(input: &[String]) -> eyre::Result<u32> {
 }
 
 #[aoc(day3, part2)]
-fn part2(input: &[String]) -> eyre::Result<u32> {
+fn part2(input: &[String]) -> anyhow::Result<u32> {
     let input = input
         .iter()
         .map(|line| line.chars().collect::<Vec<char>>())

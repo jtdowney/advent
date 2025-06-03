@@ -1,5 +1,5 @@
+use anyhow::Context;
 use aoc_runner_derive::{aoc, aoc_generator};
-use eyre::ContextCompat;
 
 #[derive(Debug, Copy, Clone)]
 enum Outcome {
@@ -71,7 +71,7 @@ impl Play {
 }
 
 #[aoc_generator(day2)]
-fn generator(input: &str) -> eyre::Result<Vec<(char, char)>> {
+fn generator(input: &str) -> anyhow::Result<Vec<(char, char)>> {
     input
         .lines()
         .map(|line| {

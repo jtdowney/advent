@@ -1,7 +1,7 @@
 use std::collections::{BTreeMap, HashMap};
 
+use anyhow::Context;
 use aoc_runner_derive::{aoc, aoc_generator};
-use eyre::ContextCompat;
 
 struct Instruction {
     count: usize,
@@ -14,7 +14,7 @@ struct Input {
     instructions: Vec<Instruction>,
 }
 
-fn parse_stacks(input: &str) -> eyre::Result<BTreeMap<u32, Vec<char>>> {
+fn parse_stacks(input: &str) -> anyhow::Result<BTreeMap<u32, Vec<char>>> {
     let mut lines = input.lines().rev();
     let labels = lines
         .next()
@@ -46,7 +46,7 @@ fn parse_stacks(input: &str) -> eyre::Result<BTreeMap<u32, Vec<char>>> {
     Ok(stacks)
 }
 
-fn parse_instructions(input: &str) -> eyre::Result<Vec<Instruction>> {
+fn parse_instructions(input: &str) -> anyhow::Result<Vec<Instruction>> {
     input
         .lines()
         .map(|line| {
@@ -68,7 +68,7 @@ fn parse_instructions(input: &str) -> eyre::Result<Vec<Instruction>> {
 }
 
 #[aoc_generator(day5)]
-fn generator(input: &str) -> eyre::Result<Input> {
+fn generator(input: &str) -> anyhow::Result<Input> {
     let mut parts = input.split("\n\n");
 
     let stacks = parts
@@ -87,7 +87,7 @@ fn generator(input: &str) -> eyre::Result<Input> {
 }
 
 #[aoc(day5, part1)]
-fn part1(input: &Input) -> eyre::Result<String> {
+fn part1(input: &Input) -> anyhow::Result<String> {
     let stacks = input.instructions.iter().try_fold(
         input.stacks.clone(),
         |mut stacks,
@@ -107,7 +107,7 @@ fn part1(input: &Input) -> eyre::Result<String> {
                 .context("getting destination")?;
             destination_stack.extend_from_slice(&moving);
 
-            Ok::<_, eyre::Report>(stacks)
+            Ok::<_, anyhow::Error>(stacks)
         },
     )?;
 
@@ -116,7 +116,7 @@ fn part1(input: &Input) -> eyre::Result<String> {
 }
 
 #[aoc(day5, part2)]
-fn part2(input: &Input) -> eyre::Result<String> {
+fn part2(input: &Input) -> anyhow::Result<String> {
     let stacks = input.instructions.iter().try_fold(
         input.stacks.clone(),
         |mut stacks,
@@ -135,7 +135,7 @@ fn part2(input: &Input) -> eyre::Result<String> {
                 .context("getting destination")?;
             destination_stack.extend_from_slice(&moving);
 
-            Ok::<_, eyre::Report>(stacks)
+            Ok::<_, anyhow::Error>(stacks)
         },
     )?;
 

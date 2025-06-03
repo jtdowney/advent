@@ -1,8 +1,8 @@
+use anyhow::Context;
 use aoc_runner_derive::{aoc, aoc_generator};
-use eyre::ContextCompat;
 
 #[aoc_generator(day1)]
-fn generator(input: &str) -> eyre::Result<Vec<Vec<usize>>> {
+fn generator(input: &str) -> anyhow::Result<Vec<Vec<usize>>> {
     input.lines().try_fold(vec![vec![]], |mut acc, line| {
         if line.is_empty() {
             acc.push(vec![]);

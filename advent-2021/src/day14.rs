@@ -1,6 +1,6 @@
 use std::{collections::HashMap, iter};
 
-use eyre::ContextCompat;
+use anyhow::Context;
 use itertools::Itertools;
 
 type Pair = (char, char);
@@ -12,7 +12,7 @@ struct Input {
 }
 
 #[aoc_generator(day14)]
-fn generator(input: &str) -> eyre::Result<Input> {
+fn generator(input: &str) -> anyhow::Result<Input> {
     let template = input
         .lines()
         .next()
@@ -32,7 +32,7 @@ fn generator(input: &str) -> eyre::Result<Input> {
                 .context("unable to find second rule part")?;
             Ok((from, to))
         })
-        .collect::<eyre::Result<_>>()?;
+        .collect::<anyhow::Result<_>>()?;
 
     Ok(Input { template, rules })
 }
@@ -80,7 +80,7 @@ fn expand(
     .skip(1)
 }
 
-fn solve(input: &Input, rounds: usize) -> eyre::Result<u64> {
+fn solve(input: &Input, rounds: usize) -> anyhow::Result<u64> {
     let last = input
         .template
         .last()
@@ -105,11 +105,11 @@ fn solve(input: &Input, rounds: usize) -> eyre::Result<u64> {
 }
 
 #[aoc(day14, part1)]
-fn part1(input: &Input) -> eyre::Result<u64> {
+fn part1(input: &Input) -> anyhow::Result<u64> {
     solve(input, 10)
 }
 
 #[aoc(day14, part2)]
-fn part2(input: &Input) -> eyre::Result<u64> {
+fn part2(input: &Input) -> anyhow::Result<u64> {
     solve(input, 40)
 }

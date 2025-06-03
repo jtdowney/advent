@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
+use anyhow::Context;
 use aoc_runner_derive::{aoc, aoc_generator};
-use eyre::ContextCompat;
 
 type Assignments = HashSet<u32>;
 
@@ -14,7 +14,7 @@ fn parse_assignments(part: &str) -> Option<Assignments> {
 }
 
 #[aoc_generator(day4)]
-fn generator(input: &str) -> eyre::Result<Vec<(Assignments, Assignments)>> {
+fn generator(input: &str) -> anyhow::Result<Vec<(Assignments, Assignments)>> {
     input
         .lines()
         .map(|line| {

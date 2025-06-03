@@ -1,6 +1,6 @@
 use std::{collections::HashSet, num::ParseIntError};
 
-use eyre::ContextCompat;
+use anyhow::Context;
 
 struct Input {
     numbers: Vec<u32>,
@@ -39,7 +39,7 @@ impl Board {
 }
 
 #[aoc_generator(day4)]
-fn generator(input: &str) -> eyre::Result<Input> {
+fn generator(input: &str) -> anyhow::Result<Input> {
     let mut lines = input.lines();
     let numbers = lines
         .next()
@@ -51,7 +51,7 @@ fn generator(input: &str) -> eyre::Result<Input> {
         .transpose()?
         .context("unable to parse numbers")?;
 
-    let boards = lines.try_fold::<_, _, eyre::Result<_>>(vec![], |mut boards, line| {
+    let boards = lines.try_fold::<_, _, anyhow::Result<_>>(vec![], |mut boards, line| {
         if line.is_empty() {
             boards.push(Board::default());
             return Ok(boards);

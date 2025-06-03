@@ -1,7 +1,7 @@
 use std::{collections::HashMap, path::PathBuf};
 
+use anyhow::bail;
 use aoc_runner_derive::{aoc, aoc_generator};
-use eyre::bail;
 use nom::{
     Finish, IResult, Parser,
     branch::alt,
@@ -77,7 +77,7 @@ impl Default for WalkState {
     }
 }
 
-fn tokenize(input: &str) -> eyre::Result<Vec<Token>> {
+fn tokenize(input: &str) -> anyhow::Result<Vec<Token>> {
     input
         .lines()
         .map(|line| match parse_token(line).finish() {
@@ -87,7 +87,7 @@ fn tokenize(input: &str) -> eyre::Result<Vec<Token>> {
         .collect::<Result<Vec<Token>, _>>()
 }
 
-fn build_filesystem(tokens: Vec<Token>) -> eyre::Result<FileSystem> {
+fn build_filesystem(tokens: Vec<Token>) -> anyhow::Result<FileSystem> {
     let state = tokens
         .into_iter()
         .try_fold(WalkState::default(), |mut walk, token| {
@@ -128,7 +128,7 @@ fn build_filesystem(tokens: Vec<Token>) -> eyre::Result<FileSystem> {
                 }
             }
 
-            Ok::<_, eyre::Report>(walk)
+            Ok::<_, anyhow::Error>(walk)
         })?;
 
     Ok(state.filesystem)
@@ -139,7 +139,7 @@ struct Search {
     current: PathBuf,
 }
 
-fn find_sizes(filesystem: &FileSystem) -> eyre::Result<HashMap<PathBuf, usize>> {
+fn find_sizes(filesystem: &FileSystem) -> anyhow::Result<HashMap<PathBuf, usize>> {
     let mut sizes = HashMap::<PathBuf, usize>::new();
     let mut walk = filesystem
         .iter()
@@ -173,7 +173,7 @@ fn find_sizes(filesystem: &FileSystem) -> eyre::Result<HashMap<PathBuf, usize>> 
 }
 
 #[aoc_generator(day7)]
-fn generator(input: &str) -> eyre::Result<HashMap<PathBuf, usize>> {
+fn generator(input: &str) -> anyhow::Result<HashMap<PathBuf, usize>> {
     let tokens = tokenize(input)?;
     let filesystem = build_filesystem(tokens)?;
     find_sizes(&filesystem)

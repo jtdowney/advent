@@ -1,12 +1,12 @@
 use std::collections::HashMap;
 
-use eyre::ContextCompat;
+use anyhow::Context;
 
 type Point = (i16, i16);
 type Line = (Point, Point);
 
 #[aoc_generator(day5)]
-fn generator(input: &str) -> eyre::Result<Vec<Line>> {
+fn generator(input: &str) -> anyhow::Result<Vec<Line>> {
     input
         .lines()
         .map(|line| {

@@ -1,6 +1,6 @@
 use std::{cmp::Ordering, iter};
 
-use eyre::ContextCompat;
+use anyhow::Context;
 use itertools::iproduct;
 use regex::Regex;
 
@@ -53,7 +53,7 @@ fn simulate(starting_velocity: Pair) -> impl Iterator<Item = Pair> {
 }
 
 #[aoc_generator(day17)]
-fn generator(input: &str) -> eyre::Result<Target> {
+fn generator(input: &str) -> anyhow::Result<Target> {
     let re =
         Regex::new(r"target area: x=(?P<x1>\d+)..(?P<x2>\d+), y=(?P<y1>-?\d+)..(?P<y2>-?\d+)")?;
     let captures = re.captures(input).context("unable to match input")?;

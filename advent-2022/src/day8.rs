@@ -1,7 +1,7 @@
 use std::{collections::HashMap, iter};
 
+use anyhow::Context;
 use aoc_runner_derive::{aoc, aoc_generator};
-use eyre::ContextCompat;
 use take_until::TakeUntilExt;
 
 type Point = (i32, i32);
@@ -13,7 +13,7 @@ fn neighbors_in_direction((x, y): Point, (dx, dy): Point) -> impl Iterator<Item 
 }
 
 #[aoc_generator(day8)]
-fn generator(input: &str) -> eyre::Result<HashMap<Point, u32>> {
+fn generator(input: &str) -> anyhow::Result<HashMap<Point, u32>> {
     input
         .lines()
         .enumerate()

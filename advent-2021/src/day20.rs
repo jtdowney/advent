@@ -1,6 +1,6 @@
 use std::{collections::HashMap, iter};
 
-use eyre::ContextCompat;
+use anyhow::Context;
 use itertools::{Itertools, iproduct};
 
 type Point = (i16, i16);
@@ -84,7 +84,7 @@ fn parse_pixel(pixel: char) -> bool {
 }
 
 #[aoc_generator(day20)]
-fn generator(input: &str) -> eyre::Result<Input> {
+fn generator(input: &str) -> anyhow::Result<Input> {
     let mut lines = input.lines();
     let enhancement = lines
         .next()

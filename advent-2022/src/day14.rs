@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
+use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
-use eyre::eyre;
 use itertools::{Itertools, iproduct};
 use nom::{
     Finish, IResult, Parser,
@@ -23,10 +23,10 @@ fn parse_input(input: &str) -> IResult<&str, Vec<Vec<Point>>> {
 }
 
 #[aoc_generator(day14)]
-fn generator(input: &str) -> eyre::Result<Grid> {
+fn generator(input: &str) -> anyhow::Result<Grid> {
     let lines = parse_input(input)
         .finish()
-        .map_err(|e| eyre!("error parsing: {}", e))
+        .map_err(|e| anyhow!("error parsing: {}", e))
         .map(|(_, o)| o)?;
     let grid = lines
         .into_iter()

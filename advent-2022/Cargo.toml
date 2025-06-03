@@ -7,7 +7,7 @@ edition = "2024"
 advent-of-code-ocr = "0.1.1"
 aoc-runner = "0.3.0"
 aoc-runner-derive = "0.3.0"
-eyre = "0.6.12"
+anyhow = "1.0"
 itertools = "0.14.0"
 nom = { version = "8", features = ["alloc"] }
 smallvec = "1.13.2"

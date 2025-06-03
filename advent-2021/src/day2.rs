@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use eyre::{Context, ContextCompat, bail};
+use anyhow::{Context, bail};
 
 #[derive(Copy, Clone)]
 enum Command {
@@ -10,7 +10,7 @@ enum Command {
 }
 
 impl FromStr for Command {
-    type Err = eyre::Report;
+    type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut parts = s.split_whitespace();
@@ -39,7 +39,7 @@ struct State {
 }
 
 #[aoc_generator(day2)]
-fn generator(input: &str) -> eyre::Result<Vec<Command>> {
+fn generator(input: &str) -> anyhow::Result<Vec<Command>> {
     input.lines().map(str::parse).collect()
 }
 

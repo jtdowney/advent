@@ -6,7 +6,7 @@ edition = "2024"
 [dependencies]
 aoc-runner = "0.3.0"
 aoc-runner-derive = "0.3.0"
-eyre = "0.6.12"
+anyhow = "1.0"
 itertools = "0.14.0"
 nalgebra = "0.33.0"
 nom = { version = "8", features = ["alloc"] }

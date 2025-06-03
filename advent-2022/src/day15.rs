@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
+use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
-use eyre::eyre;
 use itertools::{Itertools, iproduct};
 use nom::{
     Finish, IResult, Parser,
@@ -67,10 +67,10 @@ fn parse_input(input: &str) -> IResult<&str, HashMap<Point, Point>> {
 }
 
 #[aoc_generator(day15)]
-fn generator(input: &str) -> eyre::Result<HashMap<Point, Point>> {
+fn generator(input: &str) -> anyhow::Result<HashMap<Point, Point>> {
     parse_input(input)
         .finish()
-        .map_err(|e| eyre!("error parsing: {}", e))
+        .map_err(|e| anyhow!("error parsing: {}", e))
         .map(|(_, o)| o)
 }
 
