@@ -24,7 +24,7 @@ fn part2(input: &[usize]) -> usize {
         .flat_map(|n| input.iter().combinations(n))
         .filter(|c| c.iter().copied().sum::<usize>() == REQUIRED_SIZE)
         .collect::<Vec<_>>();
-    let min = solutins.iter().map(|c| c.len()).min().unwrap();
+    let min = solutins.iter().map(Vec::len).min().unwrap();
 
     solutins.iter().filter(|c| c.len() == min).count()
 }

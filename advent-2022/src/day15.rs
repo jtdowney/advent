@@ -12,8 +12,8 @@ use nom::{
     sequence::{preceded, separated_pair},
 };
 
-const TARGET_ROW: i64 = 2000000;
-const LIMIT: i64 = 4000000;
+const TARGET_ROW: i64 = 2_000_000;
+const LIMIT: i64 = 4_000_000;
 
 #[derive(Clone, Copy, Eq, Hash, PartialEq)]
 struct Point(i64, i64);

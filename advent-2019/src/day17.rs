@@ -330,7 +330,7 @@ mod tests {
 
         let _grid: Vec<Vec<char>> = map.lines().map(|line| line.chars().collect()).collect();
 
-        let intersections = vec![(2, 2), (2, 4), (6, 4), (10, 4)];
+        let intersections = [(2, 2), (2, 4), (6, 4), (10, 4)];
         let sum: usize = intersections.iter().map(|(x, y)| x * y).sum();
         assert_eq!(sum, 76);
     }

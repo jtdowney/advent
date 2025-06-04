@@ -45,5 +45,6 @@ fn part1(input: &str) -> String {
 
 #[aoc(day16, part2)]
 fn part2(input: &str) -> String {
-    solve(input, 35651584)
+    const DISK_SIZE: usize = 35_651_584;
+    solve(input, DISK_SIZE)
 }

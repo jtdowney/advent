@@ -253,7 +253,7 @@ mod tests {
 
     #[test]
     fn test_ascii_conversion() {
-        let output = vec![72, 101, 108, 108, 111, 10];
+        let output = [72, 101, 108, 108, 111, 10];
         let text: String = output.iter().map(|&c| c as u8 as char).collect();
         assert_eq!(text, "Hello\n");
     }

@@ -44,8 +44,8 @@ fn part1(instructions: &[Instruction]) -> Result<usize> {
 
 #[aoc(day22, part2)]
 fn part2(instructions: &[Instruction]) -> Result<i64> {
-    const DECK_SIZE: i64 = 119315717514047;
-    const SHUFFLE_COUNT: i64 = 101741582076661;
+    const DECK_SIZE: i64 = 119_315_717_514_047;
+    const SHUFFLE_COUNT: i64 = 101_741_582_076_661;
     const TARGET_POSITION: i64 = 2020;
 
     let (a, b) = compose_operations(instructions, DECK_SIZE);
@@ -208,9 +208,7 @@ deal into new stack
 deal into new stack";
         let instructions = parse(input).unwrap();
         let deck: Vec<usize> = (0..10).collect();
-        let result = instructions
-            .iter()
-            .fold(deck, |deck, instruction| apply_shuffle(deck, instruction));
+        let result = instructions.iter().fold(deck, apply_shuffle);
         assert_eq!(result, vec![0, 3, 6, 9, 2, 5, 8, 1, 4, 7]);
     }
 

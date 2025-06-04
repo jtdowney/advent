@@ -1,7 +1,7 @@
 use anyhow::Context;
 use aoc_runner_derive::{aoc, aoc_generator};
 
-const REDUCER: u64 = 2147483647;
+const REDUCER: u64 = 2_147_483_647;
 
 #[derive(Clone, Copy)]
 struct Generator {

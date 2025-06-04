@@ -181,15 +181,23 @@ fn generator(input: &str) -> anyhow::Result<HashMap<PathBuf, usize>> {
 
 #[aoc(day7, part1)]
 fn part1(input: &HashMap<PathBuf, usize>) -> usize {
-    input.values().copied().filter(|&size| size <= 100000).sum()
+    const SIZE_THRESHOLD: usize = 100_000;
+    input
+        .values()
+        .copied()
+        .filter(|&size| size <= SIZE_THRESHOLD)
+        .sum()
 }
 
 #[aoc(day7, part2)]
 fn part2(input: &HashMap<PathBuf, usize>) -> Option<usize> {
+    const TOTAL_DISK_SPACE: usize = 70_000_000;
+    const REQUIRED_SPACE: usize = 30_000_000;
+
     let root = PathBuf::from("/");
     let used = input[&root];
-    let remaining = 70000000 - used;
-    let needed = 30000000 - remaining;
+    let remaining = TOTAL_DISK_SPACE - used;
+    let needed = REQUIRED_SPACE - remaining;
 
     input.values().copied().filter(|&size| size >= needed).min()
 }

@@ -390,9 +390,10 @@ mod tests {
 
     #[test]
     fn test_large_numbers() {
-        let state = ComputerState::new(&[104, 1125899906842624, 99]);
+        const LARGE_TEST_VALUE: i64 = 1_125_899_906_842_624;
+        let state = ComputerState::new(&[104, LARGE_TEST_VALUE, 99]);
         let (_, outputs) = run_to_completion(state);
-        assert_eq!(outputs, vec![1125899906842624]);
+        assert_eq!(outputs, vec![LARGE_TEST_VALUE]);
     }
 
     #[test]

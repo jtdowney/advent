@@ -61,7 +61,7 @@ fn generator(input: &str) -> anyhow::Result<Vec<Reindeer>> {
 fn simulate(input: &[Reindeer]) -> HashMap<Reindeer, State> {
     let state = input
         .iter()
-        .cloned()
+        .copied()
         .map(|r| {
             let state = State {
                 remaining: r.time,
@@ -72,7 +72,7 @@ fn simulate(input: &[Reindeer]) -> HashMap<Reindeer, State> {
         .collect::<HashMap<Reindeer, State>>();
 
     (0..2503).fold(state, |mut state, _| {
-        for (reindeer, state) in state.iter_mut() {
+        for (reindeer, state) in &mut state {
             if state.remaining == 0 {
                 match state.status {
                     Status::Flying => {

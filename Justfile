@@ -12,7 +12,7 @@ clippy:
 	@for dir in */; do \
 		if [ -f "$dir/Cargo.toml" ]; then \
 			echo "📎  Linting $dir"; \
-			(cd "$dir" && cargo clippy -- -D warnings); \
+			(cd "$dir" && cargo clippy --all-targets -- -D warnings); \
 		fi; \
 	done
 

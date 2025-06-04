@@ -1,3 +1,5 @@
+use std::fmt::Write;
+
 use aoc_runner_derive::aoc;
 
 fn expand(value: &str) -> String {
@@ -6,7 +8,7 @@ fn expand(value: &str) -> String {
         |(mut acc, prev, count), c| match prev {
             Some(p) if p == c => (acc, prev, count + 1),
             Some(p) => {
-                acc.push_str(&format!("{count}{p}"));
+                write!(&mut acc, "{count}{p}").unwrap();
                 (acc, Some(c), 1)
             }
             None => (acc, Some(c), 1),
@@ -14,7 +16,7 @@ fn expand(value: &str) -> String {
     );
 
     if let Some(p) = prev {
-        acc.push_str(&format!("{count}{p}"));
+        write!(&mut acc, "{count}{p}").unwrap();
     }
 
     acc

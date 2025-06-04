@@ -59,7 +59,7 @@ fn part1(input: &Ingrediants) -> isize {
                 .map(|prop| {
                     lookup
                         .iter()
-                        .map(|(name, value)| input[&name.to_string()][&prop.to_string()] * value)
+                        .map(|(name, value)| input[*name][*prop] * value)
                         .sum::<isize>()
                 })
                 .map(|prop| if prop.is_negative() { 0 } else { prop })
@@ -82,7 +82,7 @@ fn part2(input: &Ingrediants) -> isize {
 
             let calories = lookup
                 .iter()
-                .map(|(name, value)| input[&name.to_string()]["calories"] * value)
+                .map(|(name, value)| input[*name]["calories"] * value)
                 .sum::<isize>();
             if calories != 500 {
                 return None;
@@ -93,7 +93,7 @@ fn part2(input: &Ingrediants) -> isize {
                 .map(|prop| {
                     lookup
                         .iter()
-                        .map(|(name, value)| input[&name.to_string()][&prop.to_string()] * value)
+                        .map(|(name, value)| input[*name][*prop] * value)
                         .sum::<isize>()
                 })
                 .map(|prop| if prop.is_negative() { 0 } else { prop })

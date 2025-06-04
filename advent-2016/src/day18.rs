@@ -38,8 +38,9 @@ fn part1(input: &Row) -> usize {
 
 #[aoc(day18, part2)]
 fn part2(input: &Row) -> usize {
+    const ROW_COUNT: usize = 400_000;
     iter::successors(Some(input.clone()), |row| Some(row.next()))
-        .take(400000)
+        .take(ROW_COUNT)
         .map(|row| row.tiles.iter().filter(|&&b| !b).count())
         .sum()
 }

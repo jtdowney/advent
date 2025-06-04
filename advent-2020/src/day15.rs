@@ -43,5 +43,6 @@ fn part1(seen: &HashMap<usize, usize>) -> Result<usize> {
 
 #[aoc(day15, part2)]
 fn part2(seen: &HashMap<usize, usize>) -> Result<usize> {
-    solve(30000000, seen)
+    const TARGET_TURN: usize = 30_000_000;
+    solve(TARGET_TURN, seen)
 }

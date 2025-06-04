@@ -2,7 +2,7 @@ use std::iter;
 
 use anyhow::Result;
 
-const MODULUS: u64 = 20201227;
+const MODULUS: u64 = 20_201_227;
 const SUBJECT_NUMBER: u64 = 7;
 
 fn transform(subject_number: u64, loop_size: usize) -> u64 {

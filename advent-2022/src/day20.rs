@@ -40,7 +40,8 @@ fn part1(input: &[i64]) -> i64 {
 
 #[aoc(day20, part2)]
 fn part2(input: &[i64]) -> i64 {
-    mix(input, 10, 811589153)
+    const DECRYPTION_KEY: i64 = 811_589_153;
+    mix(input, 10, DECRYPTION_KEY)
 }
 
 #[cfg(test)]
