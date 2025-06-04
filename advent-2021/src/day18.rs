@@ -115,20 +115,30 @@ impl FromStr for SnailNumber {
     type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let state = s.chars().try_fold(ParserState::default(), |mut state, c| {
+        let mut state = ParserState::default();
+        let mut chars = s.chars().peekable();
+
+        while let Some(c) = chars.next() {
             match c {
                 '[' => state.current_depth += 1,
                 ']' => state.current_depth -= 1,
                 ',' => {}
                 c if c.is_ascii_digit() => {
-                    state.values.push(c.to_digit(10).unwrap() as u8);
+                    let mut num = c.to_digit(10).unwrap() as u8;
+                    while let Some(&next_c) = chars.peek() {
+                        if next_c.is_ascii_digit() {
+                            num = num * 10 + next_c.to_digit(10).unwrap() as u8;
+                            chars.next();
+                        } else {
+                            break;
+                        }
+                    }
+                    state.values.push(num);
                     state.depths.push(state.current_depth);
                 }
                 _ => bail!("unexpected {}", c),
             }
-
-            Ok(state)
-        })?;
+        }
 
         Ok(state.into())
     }
