@@ -43,7 +43,7 @@ impl From<char> for Cell {
             'J' => Cell(vec![Direction::North, Direction::West]),
             '7' => Cell(vec![Direction::South, Direction::West]),
             'F' => Cell(vec![Direction::South, Direction::East]),
-            _ => panic!("Invalid cell: {}", value),
+            _ => panic!("Invalid cell: {value}"),
         }
     }
 }

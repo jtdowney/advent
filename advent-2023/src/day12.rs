@@ -40,9 +40,8 @@ impl Record {
             if chunks.is_empty() {
                 if conditions.contains(&'#') {
                     return 0;
-                } else {
-                    return 1;
                 }
+                return 1;
             }
 
             let length = chunks[0];
@@ -101,7 +100,7 @@ fn generator(input: &str) -> anyhow::Result<Vec<Record>> {
 
 #[aoc(day12, part1)]
 fn part1(input: &[Record]) -> u64 {
-    input.iter().map(|record| record.arrangements()).sum()
+    input.iter().map(Record::arrangements).sum()
 }
 
 #[aoc(day12, part2)]

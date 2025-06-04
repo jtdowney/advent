@@ -9,14 +9,14 @@ fn generator(input: &str) -> Vec<String> {
 
 fn hash(input: &str) -> u8 {
     input.bytes().fold(0, |acc, value| {
-        let next = (acc as u32 + value as u32) * 17;
+        let next = (u32::from(acc) + u32::from(value)) * 17;
         (next % 256) as u8
     })
 }
 
 #[aoc(day15, part1)]
 fn part1(input: &[String]) -> u32 {
-    input.iter().map(|s| hash(s) as u32).sum()
+    input.iter().map(|s| u32::from(hash(s))).sum()
 }
 
 #[aoc(day15, part2)]
@@ -50,7 +50,7 @@ fn part2(input: &[String]) -> u32 {
             slots
                 .iter()
                 .enumerate()
-                .map(|(slot, &(_, focal))| (*id as u32 + 1) * (slot as u32 + 1) * focal)
+                .map(|(slot, &(_, focal))| (u32::from(*id) + 1) * (slot as u32 + 1) * focal)
                 .sum::<u32>()
         })
         .sum()

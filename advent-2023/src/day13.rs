@@ -81,7 +81,7 @@ fn generator(input: &str) -> Vec<Pattern> {
 fn part1(input: &[Pattern]) -> usize {
     input
         .iter()
-        .flat_map(|pattern| pattern.mirrors())
+        .flat_map(Pattern::mirrors)
         .map(|mirror| mirror.value())
         .sum()
 }
@@ -90,7 +90,7 @@ fn part1(input: &[Pattern]) -> usize {
 fn part2(input: &[Pattern]) -> usize {
     input
         .iter()
-        .flat_map(|pattern| {
+        .filter_map(|pattern| {
             let existing = pattern.mirrors();
             iproduct!(0..pattern.cells.len(), 0..pattern.cells[0].len()).find_map(move |(y, x)| {
                 let mut next_pattern = pattern.clone();

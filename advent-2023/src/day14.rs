@@ -133,9 +133,8 @@ fn part2(input: &Map) -> usize {
             }
 
             return map.total_load();
-        } else {
-            cycles.insert(map.clone(), i);
         }
+        cycles.insert(map.clone(), i);
     }
 
     unreachable!()
