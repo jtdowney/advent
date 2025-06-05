@@ -9,7 +9,7 @@ type Report = Vec<i32>;
 fn generator(input: &str) -> Result<Vec<Report>, ParseIntError> {
     input
         .lines()
-        .map(|line| line.split_whitespace().map(|s| s.parse()).collect())
+        .map(|line| line.split_whitespace().map(str::parse).collect())
         .collect()
 }
 
@@ -30,7 +30,7 @@ fn is_safe(report: &Report) -> bool {
             Some(true) if a > b => return false,
             Some(false) if a < b => return false,
             None => trend = Some(a <= b),
-            _ => continue,
+            _ => {}
         }
     }
 

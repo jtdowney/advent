@@ -42,7 +42,7 @@ fn sequence(
             None
         }
     })
-    .flat_map(|p| grid.get(&p))
+    .filter_map(|p| grid.get(&p))
     .copied()
 }
 

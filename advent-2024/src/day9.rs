@@ -89,15 +89,12 @@ fn compact2(disk: &Disk, freelist: &Freelist) -> Disk {
     let mut compacted = Disk::new();
 
     while let Some((position, block)) = disk.pop_last() {
-        let (free_position, free_length) = match freelist
+        let Some((&free_position, &free_length)) = freelist
             .iter()
             .find(|&(&free_position, &length)| free_position < position && length >= block.length)
-        {
-            Some((&position, &length)) => (position, length),
-            None => {
-                compacted.insert(position, block);
-                continue;
-            }
+        else {
+            compacted.insert(position, block);
+            continue;
         };
 
         freelist.remove(&free_position);

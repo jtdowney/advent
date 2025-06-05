@@ -86,7 +86,7 @@ fn generator(input: &str) -> anyhow::Result<Vec<Candidate>> {
         .map(|line| {
             let pages = line
                 .split(',')
-                .map(|page| page.parse::<u32>())
+                .map(str::parse::<u32>)
                 .collect::<Result<Vec<_>, _>>()?;
             anyhow::Ok(Candidate { pages, rules })
         })

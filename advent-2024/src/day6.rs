@@ -34,7 +34,7 @@ enum Direction {
 }
 
 impl Direction {
-    fn next(&self) -> Self {
+    fn next(self) -> Self {
         match self {
             Direction::Up => Direction::Right,
             Direction::Right => Direction::Down,

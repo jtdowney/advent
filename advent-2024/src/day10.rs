@@ -47,9 +47,8 @@ fn solve(input: &HashMap<Point, u32>) -> (usize, usize) {
     let mut trails = HashMap::<Point, HashSet<Point>>::new();
     let mut ratings = HashMap::<Point, usize>::new();
     while let Some(Search { start, current }) = search.pop() {
-        let height = match input.get(&current) {
-            Some(&height) => height,
-            None => continue,
+        let Some(&height) = input.get(&current) else {
+            continue;
         };
 
         if height == 9 {
@@ -70,7 +69,7 @@ fn solve(input: &HashMap<Point, u32>) -> (usize, usize) {
         }
     }
 
-    let score = trails.values().map(|trail| trail.len()).sum();
+    let score = trails.values().map(HashSet::len).sum();
     let rating = ratings.values().sum();
 
     (score, rating)

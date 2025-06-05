@@ -60,7 +60,7 @@ fn is_valid(eq: &Equation, concat: bool) -> bool {
     let result = is_valid(&a, concat) || is_valid(&b, concat);
     if concat {
         let mut c_remaining = remaining;
-        let concated = format!("{}{}", left, right).parse().unwrap();
+        let concated = format!("{left}{right}").parse().unwrap();
         c_remaining.push(concated);
 
         let c = Equation {

@@ -42,7 +42,7 @@ fn part2(input: &[Instruction]) -> u32 {
             Instruction::Mul(a, b) if enabled => (enabled, acc + a * b),
             Instruction::Enable => (true, acc),
             Instruction::Disable => (false, acc),
-            _ => (enabled, acc),
+            Instruction::Mul(..) => (enabled, acc),
         });
     sum
 }
