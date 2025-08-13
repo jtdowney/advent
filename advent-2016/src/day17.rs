@@ -21,7 +21,7 @@ impl Step {
         context.consume(&self.path);
 
         let (x, y) = self.position;
-        let hash = format!("{:x}", context.compute());
+        let hash = format!("{:x}", context.finalize());
         hash.chars()
             .enumerate()
             .take(4)
