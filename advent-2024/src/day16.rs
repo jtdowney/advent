@@ -181,10 +181,10 @@ fn find_optimal_path_tiles(maze: &Maze) -> HashSet<Position> {
     let mut end_states = Vec::new();
 
     while let Some(Node { cost, state }) = heap.pop() {
-        if let Some(&dist) = distances.get(&state) {
-            if cost > dist {
-                continue;
-            }
+        if let Some(&dist) = distances.get(&state)
+            && cost > dist
+        {
+            continue;
         }
 
         if state.pos == maze.end {
@@ -265,10 +265,10 @@ fn find_shortest_path(maze: &Maze) -> u32 {
             return cost;
         }
 
-        if let Some(&dist) = distances.get(&state) {
-            if cost > dist {
-                continue;
-            }
+        if let Some(&dist) = distances.get(&state)
+            && cost > dist
+        {
+            continue;
         }
 
         for &move_type in &MOVES {

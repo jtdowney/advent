@@ -42,10 +42,10 @@ impl Network {
             for (dest, x, y) in computer_packets {
                 if dest == 255 {
                     packets.push((255, x, y));
-                } else if let Ok(dest_usize) = usize::try_from(dest) {
-                    if dest_usize < num_computers {
-                        packets.push((dest_usize, x, y));
-                    }
+                } else if let Ok(dest_usize) = usize::try_from(dest)
+                    && dest_usize < num_computers
+                {
+                    packets.push((dest_usize, x, y));
                 }
             }
         }
@@ -112,18 +112,18 @@ fn part2(input: &[i64]) -> Result<i64> {
             idle_rounds = 0;
         }
 
-        if idle_rounds > 2 {
-            if let Some((x, y)) = nat_packet {
-                if last_y_sent == Some(y) {
-                    return Ok(y);
-                }
-
-                network.computers[0].inputs.push_back(x);
-                network.computers[0].inputs.push_back(y);
-                network.is_idle[0] = false;
-                last_y_sent = Some(y);
-                idle_rounds = 0;
+        if idle_rounds > 2
+            && let Some((x, y)) = nat_packet
+        {
+            if last_y_sent == Some(y) {
+                return Ok(y);
             }
+
+            network.computers[0].inputs.push_back(x);
+            network.computers[0].inputs.push_back(y);
+            network.is_idle[0] = false;
+            last_y_sent = Some(y);
+            idle_rounds = 0;
         }
     }
 }

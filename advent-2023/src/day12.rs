@@ -14,10 +14,10 @@ struct Record {
 impl Record {
     fn arrangements(&self) -> u64 {
         fn fits(conditions: &[char], start: usize, length: usize) -> bool {
-            if let Some(&postfix) = conditions.get(start + length) {
-                if postfix == '#' {
-                    return false;
-                }
+            if let Some(&postfix) = conditions.get(start + length)
+                && postfix == '#'
+            {
+                return false;
             }
 
             if conditions[..start].contains(&'#') {

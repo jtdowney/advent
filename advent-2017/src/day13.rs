@@ -53,10 +53,10 @@ fn trace_packet(layers: &[Layer]) -> u16 {
         .collect::<HashMap<u16, Layer>>();
 
     (0..=last).fold(0, |mut acc, t| {
-        if let Some(layer) = layers.get(&t) {
-            if layer.position == 0 {
-                acc += layer.depth * layer.range;
-            }
+        if let Some(layer) = layers.get(&t)
+            && layer.position == 0
+        {
+            acc += layer.depth * layer.range;
         }
 
         for layer in layers.values_mut() {

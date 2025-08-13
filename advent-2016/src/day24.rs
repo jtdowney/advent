@@ -64,10 +64,10 @@ fn distance(map: &Map, start: Point, end: Point) -> usize {
         let (x, y) = point;
         for (dx, dy) in &[(0, 1), (0, -1), (1, 0), (-1, 0)] {
             let new_point = (x.saturating_add_signed(*dx), y.saturating_add_signed(*dy));
-            if let Some(cell) = map.get(&new_point) {
-                if *cell != Cell::Wall {
-                    search.push_back((new_point, steps + 1));
-                }
+            if let Some(cell) = map.get(&new_point)
+                && *cell != Cell::Wall
+            {
+                search.push_back((new_point, steps + 1));
             }
         }
     }

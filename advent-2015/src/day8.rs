@@ -42,7 +42,7 @@ fn literal(input: &str) -> IResult<&str, &str> {
     verify(not_quote_slash, |s: &str| !s.is_empty()).parse(input)
 }
 
-fn fragment(input: &str) -> IResult<&str, StringFragment> {
+fn fragment(input: &str) -> IResult<&str, StringFragment<'_>> {
     alt((
         map(literal, StringFragment::Literal),
         map(escaped, StringFragment::EscapedChar),

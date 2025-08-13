@@ -232,39 +232,39 @@ fn fill_grid(
 fn get_required_neighbors(grid: &[Vec<Option<Tile>>], row: usize, col: usize) -> Vec<u64> {
     let mut neighbors = vec![];
 
-    if row > 0 {
-        if let Some(tile) = &grid[row - 1][col] {
-            neighbors.push(tile.id);
-        }
+    if row > 0
+        && let Some(tile) = &grid[row - 1][col]
+    {
+        neighbors.push(tile.id);
     }
 
-    if col > 0 {
-        if let Some(tile) = &grid[row][col - 1] {
-            neighbors.push(tile.id);
-        }
+    if col > 0
+        && let Some(tile) = &grid[row][col - 1]
+    {
+        neighbors.push(tile.id);
     }
 
     neighbors
 }
 
 fn fits_in_grid(grid: &[Vec<Option<Tile>>], tile: &Tile, row: usize, col: usize) -> bool {
-    if row > 0 {
-        if let Some(above) = &grid[row - 1][col] {
-            let above_bottom: String = above.data.last().unwrap().iter().collect();
-            let tile_top: String = tile.data[0].iter().collect();
-            if above_bottom != tile_top {
-                return false;
-            }
+    if row > 0
+        && let Some(above) = &grid[row - 1][col]
+    {
+        let above_bottom: String = above.data.last().unwrap().iter().collect();
+        let tile_top: String = tile.data[0].iter().collect();
+        if above_bottom != tile_top {
+            return false;
         }
     }
 
-    if col > 0 {
-        if let Some(left) = &grid[row][col - 1] {
-            let left_right: String = left.data.iter().map(|row| row.last().unwrap()).collect();
-            let tile_left: String = tile.data.iter().map(|row| row[0]).collect();
-            if left_right != tile_left {
-                return false;
-            }
+    if col > 0
+        && let Some(left) = &grid[row][col - 1]
+    {
+        let left_right: String = left.data.iter().map(|row| row.last().unwrap()).collect();
+        let tile_left: String = tile.data.iter().map(|row| row[0]).collect();
+        if left_right != tile_left {
+            return false;
         }
     }
 

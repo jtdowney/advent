@@ -54,10 +54,10 @@ fn next_generation(state: &HashSet<isize>, rules: &HashMap<String, bool>) -> Has
         for j in i - 2..=i + 2 {
             matches.push(if state.contains(&j) { '#' } else { '.' });
         }
-        if let Some(&b) = rules.get(&matches) {
-            if b {
-                next_state.insert(i);
-            }
+        if let Some(&b) = rules.get(&matches)
+            && b
+        {
+            next_state.insert(i);
         }
     }
 

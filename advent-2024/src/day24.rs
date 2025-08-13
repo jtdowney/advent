@@ -322,8 +322,8 @@ tnw OR pbm -> gnj";
         let circuit = generator(EXAMPLE_1).unwrap();
         assert_eq!(circuit.initial_values.len(), 6);
         assert_eq!(circuit.gates.len(), 3);
-        assert_eq!(*circuit.initial_values.get("x00").unwrap(), true);
-        assert_eq!(*circuit.initial_values.get("y00").unwrap(), false);
+        assert!(*circuit.initial_values.get("x00").unwrap());
+        assert!(!*circuit.initial_values.get("y00").unwrap());
     }
 
     #[test]

@@ -134,10 +134,10 @@ fn part1((start_point, map): &(Point, Map)) -> Option<usize> {
             .or_insert(steps);
 
         for neighbor in neighbors(point, map) {
-            if let Some(&visited_steps) = visited.get(&neighbor) {
-                if visited_steps < steps {
-                    continue;
-                }
+            if let Some(&visited_steps) = visited.get(&neighbor)
+                && visited_steps < steps
+            {
+                continue;
             }
 
             search.push((neighbor, steps + 1))

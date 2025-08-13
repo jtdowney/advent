@@ -19,11 +19,11 @@ fn fully_react(input: &[char]) -> usize {
     'outer: loop {
         for i in 0..polymers.len() {
             let current = polymers[i];
-            if let Some(&next) = polymers.get(i + 1) {
-                if current.is_reacting(next) {
-                    let _ = polymers.drain(i..=i + 1);
-                    continue 'outer;
-                }
+            if let Some(&next) = polymers.get(i + 1)
+                && current.is_reacting(next)
+            {
+                let _ = polymers.drain(i..=i + 1);
+                continue 'outer;
             }
         }
 

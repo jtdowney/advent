@@ -101,10 +101,10 @@ fn search(map: &Map, min_steps: u8, max_steps: u8) -> u32 {
                 next_position = next_direction.next_position(next_position);
                 if let Some(&loss) = map.get(&next_position) {
                     next_heat_loss += loss as u32;
-                    if let Some(&existing) = heat_map.get(&next_position) {
-                        if existing < next_heat_loss {
-                            continue;
-                        }
+                    if let Some(&existing) = heat_map.get(&next_position)
+                        && existing < next_heat_loss
+                    {
+                        continue;
                     }
 
                     if steps >= min_steps {

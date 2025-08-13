@@ -93,10 +93,10 @@ fn generator(input: &str) -> anyhow::Result<Configuration> {
             .map(|(name, _)| (name.clone(), Pulse::Low))
             .collect();
 
-        if let Some(module) = configuration.get_mut(&conj_name) {
-            if let ModuleType::Conjunction { memory } = &mut module.module_type {
-                *memory = inputs;
-            }
+        if let Some(module) = configuration.get_mut(&conj_name)
+            && let ModuleType::Conjunction { memory } = &mut module.module_type
+        {
+            *memory = inputs;
         }
     }
 
@@ -113,11 +113,11 @@ where
     while let Some((from, to, pulse)) = queue.pop_front() {
         callback(&from, &to, pulse);
 
-        if let Some(module) = configuration.get_mut(&to) {
-            if let Some(output) = module.process_pulse(from, pulse) {
-                for dest in &module.destinations {
-                    queue.push_back((to.clone(), dest.clone(), output));
-                }
+        if let Some(module) = configuration.get_mut(&to)
+            && let Some(output) = module.process_pulse(from, pulse)
+        {
+            for dest in &module.destinations {
+                queue.push_back((to.clone(), dest.clone(), output));
             }
         }
     }

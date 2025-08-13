@@ -166,11 +166,11 @@ fn simulate_oxygen_spread(map: &HashMap<Point, Tile>, start: Point) -> usize {
                 continue;
             }
 
-            if let Some(&tile) = map.get(&next_pos) {
-                if tile != Tile::Wall {
-                    visited.insert(next_pos);
-                    queue.push_back((next_pos, minutes + 1));
-                }
+            if let Some(&tile) = map.get(&next_pos)
+                && tile != Tile::Wall
+            {
+                visited.insert(next_pos);
+                queue.push_back((next_pos, minutes + 1));
             }
         }
     }

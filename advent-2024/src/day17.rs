@@ -92,7 +92,7 @@ fn parse_program_line(line: &str) -> Option<Vec<u8>> {
 fn generator(input: &str) -> Option<Computer> {
     let lines: Vec<&str> = input.lines().collect();
 
-    let register_a = parse_register_line(lines.get(0)?, "Register A: ")?;
+    let register_a = parse_register_line(lines.first()?, "Register A: ")?;
     let register_b = parse_register_line(lines.get(1)?, "Register B: ")?;
     let register_c = parse_register_line(lines.get(2)?, "Register C: ")?;
     let program = parse_program_line(lines.get(4)?)?;

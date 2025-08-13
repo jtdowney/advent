@@ -149,14 +149,14 @@ fn collect_boxes_to_move(
     let mut to_check = vec![start_pos];
 
     while let Some(pos) = to_check.pop() {
-        if let Some(box_pos) = get_box_left_position(wide_boxes, pos) {
-            if boxes_to_move.insert(box_pos) {
-                let (box_x, box_y) = box_pos;
-                let new_positions = [box_pos, (box_x + 1, box_y)]
-                    .into_iter()
-                    .map(|p| add_points(p, dir));
-                to_check.extend(new_positions);
-            }
+        if let Some(box_pos) = get_box_left_position(wide_boxes, pos)
+            && boxes_to_move.insert(box_pos)
+        {
+            let (box_x, box_y) = box_pos;
+            let new_positions = [box_pos, (box_x + 1, box_y)]
+                .into_iter()
+                .map(|p| add_points(p, dir));
+            to_check.extend(new_positions);
         }
     }
 
