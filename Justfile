@@ -34,7 +34,7 @@ test:
 		fi; \
 	done
 
-update:
+update-deps:
 	@echo "🔄  Updating dependencies for all years…"
 	@for dir in */; do \
 		if [ -f "$dir/Cargo.toml" ]; then \
