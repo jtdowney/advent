@@ -31,7 +31,7 @@ fn solve(input: &str, length: usize) -> String {
     data.truncate(length);
 
     let mut checksum = calculate_checksum(&data);
-    while checksum.len() % 2 == 0 {
+    while checksum.len().is_multiple_of(2) {
         checksum = calculate_checksum(&checksum);
     }
 

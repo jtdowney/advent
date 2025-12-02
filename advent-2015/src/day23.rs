@@ -100,7 +100,7 @@ fn execute(instructions: &[Instruction], mut registers: Registers) -> u32 {
                 pc = (pc as i32 + offset) as usize;
             }
             Instruction::JumpIfEven(r, offset) => {
-                if registers[r] % 2 == 0 {
+                if registers[r].is_multiple_of(2) {
                     pc = (pc as i32 + offset) as usize;
                 } else {
                     pc += 1;

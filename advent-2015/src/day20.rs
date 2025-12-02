@@ -11,7 +11,7 @@ fn elves_visited(house: usize) -> Vec<usize> {
     let mut elves = vec![];
     let mut i = 1;
     while i * i <= house {
-        if house % i == 0 {
+        if house.is_multiple_of(i) {
             elves.push(i);
 
             if i * i != house {

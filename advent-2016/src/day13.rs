@@ -10,7 +10,7 @@ const MAX_STEPS: usize = 50;
 
 fn is_open_space((x, y): Point, favorite_number: u32) -> bool {
     let value = x * x + 3 * x + 2 * x * y + y + y * y + favorite_number;
-    value.count_ones() % 2 == 0
+    value.count_ones().is_multiple_of(2)
 }
 
 fn neighbors((x, y): Point, favorite_number: u32) -> impl Iterator<Item = Point> {

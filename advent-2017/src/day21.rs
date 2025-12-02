@@ -164,7 +164,7 @@ impl Image {
     fn subdivide(&self) -> Vec<Pattern> {
         let size = self.pixels.len();
         let mut patterns = vec![];
-        if size % 2 == 0 {
+        if size.is_multiple_of(2) {
             for y in (0..size).step_by(2) {
                 for x in (0..size).step_by(2) {
                     let mut pixels = vec![];

@@ -28,5 +28,5 @@ fn part2(input: &Program) -> usize {
     }
 
     let n = machine.registers[4];
-    n + (1..=n / 2).filter(|x| n % x == 0).sum::<usize>()
+    n + (1..=n / 2).filter(|x| n.is_multiple_of(*x)).sum::<usize>()
 }

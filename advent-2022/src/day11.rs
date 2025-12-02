@@ -122,7 +122,7 @@ where
 
                 let level = monkeys[i].inspect(item);
                 let level = reducer(level);
-                if level % test == 0 {
+                if level.is_multiple_of(test) {
                     monkeys[throw_true].items.push_back(level);
                 } else {
                     monkeys[throw_false].items.push_back(level);
