@@ -34,7 +34,7 @@ fn part1(input: &[RangeInclusive<u64>]) -> u64 {
     input
         .iter()
         .flat_map(Clone::clone)
-        .filter(|id| !valid(*id, 2))
+        .filter(|&id| !valid(id, 2))
         .sum()
 }
 
@@ -43,9 +43,11 @@ fn part2(input: &[RangeInclusive<u64>]) -> u64 {
     input
         .iter()
         .flat_map(Clone::clone)
-        .filter(|id| {
-            let s = id.to_string();
-            (2..=s.len()).any(|chunks| s.len() % chunks == 0 && !valid(*id, chunks))
+        .filter(|&id| {
+            let id_str = id.to_string();
+            (2..=id_str.len())
+                .filter(|&size| id_str.len().is_multiple_of(size))
+                .any(|chunks| !valid(id, chunks))
         })
         .sum()
 }
