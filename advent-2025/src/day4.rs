@@ -30,6 +30,7 @@ fn generator(input: &str) -> HashSet<Point> {
         .enumerate()
         .flat_map(|(y, line)| {
             line.chars().enumerate().filter_map(move |(x, c)| {
+                #[allow(clippy::cast_possible_truncation, clippy::cast_possible_wrap)]
                 if c == '@' {
                     Some((x as i16, y as i16))
                 } else {
@@ -55,7 +56,7 @@ fn part2(input: &HashSet<Point>) -> Option<usize> {
         let mut next = grid.clone();
         next.retain(|&p| !is_removable(p, grid));
 
-        if grid != &next { Some(next) } else { None }
+        if grid == &next { None } else { Some(next) }
     })
     .last()
     .map(|grid| input.len() - grid.len())
