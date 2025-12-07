@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use anyhow::bail;
 use aoc_runner_derive::{aoc, aoc_generator};
 
-type Cache = Vec<Vec<Option<usize>>>;
+type Cache = Vec<Vec<usize>>;
 
 #[derive(Debug)]
 struct Simulation {
@@ -85,8 +85,8 @@ fn ways(x: usize, row_idx: usize, input: &Simulation, cache: &mut Cache) -> usiz
         return 1;
     }
 
-    if let Some(cached) = cache[x][row_idx] {
-        return cached;
+    if cache[x][row_idx] > 0 {
+        return cache[x][row_idx];
     }
 
     let result = if input.splitter_rows[row_idx].contains(&x) {
@@ -103,13 +103,13 @@ fn ways(x: usize, row_idx: usize, input: &Simulation, cache: &mut Cache) -> usiz
         ways(x, row_idx + 1, input, cache)
     };
 
-    cache[x][row_idx] = Some(result);
+    cache[x][row_idx] = result;
     result
 }
 
 #[aoc(day7, part2)]
 fn part2(input: &Simulation) -> usize {
     let num_rows = input.splitter_rows.len();
-    let mut cache = vec![vec![None; num_rows + 1]; input.width];
+    let mut cache = vec![vec![0; num_rows + 1]; input.width];
     ways(input.start_x, 0, input, &mut cache)
 }
