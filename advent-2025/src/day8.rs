@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{cmp::Ordering, collections::HashMap};
 
 use anyhow::Context;
 use aoc_runner_derive::{aoc, aoc_generator};
@@ -18,7 +18,7 @@ impl Point {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 struct PointPair(Point, Point);
 
 impl PointPair {
@@ -32,13 +32,61 @@ impl PointPair {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd)]
-struct CircuitId(usize);
+#[derive(Debug, Clone)]
+struct UnionFind {
+    parent: Vec<usize>,
+    rank: Vec<usize>,
+    count: usize,
+}
+
+impl UnionFind {
+    fn new(n: usize) -> Self {
+        Self {
+            parent: (0..n).collect(),
+            rank: vec![0; n],
+            count: n,
+        }
+    }
+
+    fn find(&mut self, x: usize) -> usize {
+        if self.parent[x] != x {
+            self.parent[x] = self.find(self.parent[x]);
+        }
+
+        self.parent[x]
+    }
+
+    fn union(&mut self, x: usize, y: usize) -> bool {
+        let root_x = self.find(x);
+        let root_y = self.find(y);
+
+        if root_x == root_y {
+            return false;
+        }
+
+        match self.rank[root_x].cmp(&self.rank[root_y]) {
+            Ordering::Less => self.parent[root_x] = root_y,
+            Ordering::Greater => self.parent[root_y] = root_x,
+            Ordering::Equal => {
+                self.parent[root_y] = root_x;
+                self.rank[root_x] += 1;
+            }
+        }
+
+        self.count -= 1;
+        true
+    }
+
+    fn component_sizes(&mut self) -> impl Iterator<Item = usize> + '_ {
+        let n = self.parent.len();
+        (0..n).map(|i| self.find(i)).counts().into_values()
+    }
+}
 
 #[derive(Debug, Clone)]
 struct Input {
-    circuits: HashMap<Point, CircuitId>,
-    distances: Vec<PointPair>,
+    point_index: HashMap<Point, usize>,
+    edges: Vec<PointPair>,
 }
 
 #[aoc_generator(day8)]
@@ -54,13 +102,9 @@ fn generator(input: &str) -> anyhow::Result<Input> {
         })
         .collect::<anyhow::Result<Vec<_>>>()?;
 
-    let circuits = points
-        .iter()
-        .enumerate()
-        .map(|(i, p)| (*p, CircuitId(i)))
-        .collect();
+    let point_index = points.iter().enumerate().map(|(i, p)| (*p, i)).collect();
 
-    let distances = points
+    let edges = points
         .iter()
         .flat_map(|&p1| {
             points
@@ -73,47 +117,20 @@ fn generator(input: &str) -> anyhow::Result<Input> {
         .map(|(_, pair)| pair)
         .collect();
 
-    Ok(Input {
-        circuits,
-        distances,
-    })
-}
-
-fn merge_circuits(circuits: &mut HashMap<Point, CircuitId>, p1: &Point, p2: &Point) -> bool {
-    let id1 = circuits[p1];
-    let id2 = circuits[p2];
-
-    if id1 == id2 {
-        return false;
-    }
-
-    let min_id = id1.min(id2);
-    let max_id = id1.max(id2);
-
-    circuits
-        .values_mut()
-        .filter(|id| **id == max_id)
-        .for_each(|id| *id = min_id);
-
-    true
-}
-
-fn circuit_count(circuits: &HashMap<Point, CircuitId>) -> usize {
-    circuits.values().unique().count()
+    Ok(Input { point_index, edges })
 }
 
 #[aoc(day8, part1)]
 fn part1(input: &Input) -> usize {
-    let mut circuits = input.circuits.clone();
+    let mut uf = UnionFind::new(input.point_index.len());
 
-    for PointPair(p1, p2) in input.distances.iter().take(1000) {
-        merge_circuits(&mut circuits, p1, p2);
+    for PointPair(p1, p2) in input.edges.iter().take(1000) {
+        let i1 = input.point_index[p1];
+        let i2 = input.point_index[p2];
+        uf.union(i1, i2);
     }
 
-    circuits
-        .values()
-        .counts()
-        .into_values()
+    uf.component_sizes()
         .sorted_unstable_by(|a, b| b.cmp(a))
         .take(3)
         .product()
@@ -121,13 +138,15 @@ fn part1(input: &Input) -> usize {
 
 #[aoc(day8, part2)]
 fn part2(input: &Input) -> u64 {
-    let mut circuits = input.circuits.clone();
+    let mut uf = UnionFind::new(input.point_index.len());
 
-    for PointPair(p1, p2) in &input.distances {
-        if merge_circuits(&mut circuits, p1, p2) && circuit_count(&circuits) == 1 {
-            let Point(x1, _, _) = p1;
-            let Point(x2, _, _) = p2;
-            return u64::from(*x1) * u64::from(*x2);
+    for PointPair(p1, p2) in &input.edges {
+        let i1 = input.point_index[p1];
+        let i2 = input.point_index[p2];
+        if uf.union(i1, i2) && uf.count == 1 {
+            let Point(x1, _, _) = *p1;
+            let Point(x2, _, _) = *p2;
+            return u64::from(x1) * u64::from(x2);
         }
     }
 
