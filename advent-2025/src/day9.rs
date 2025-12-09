@@ -1,6 +1,6 @@
 use std::{collections::HashMap, ops::RangeInclusive};
 
-use anyhow::bail;
+use anyhow::Context;
 use aoc_runner_derive::{aoc, aoc_generator};
 use itertools::Itertools;
 
@@ -85,6 +85,7 @@ impl Polygon {
                     }
                     _ => merged.push(range),
                 }
+
                 merged
             })
     }
@@ -114,10 +115,7 @@ fn generator(input: &str) -> anyhow::Result<Vec<Point>> {
     input
         .lines()
         .map(|line| {
-            let Some((left, right)) = line.split_once(',') else {
-                bail!("Invalid input");
-            };
-
+            let (left, right) = line.split_once(',').context("Invalid input")?;
             let x = left.parse()?;
             let y = right.parse()?;
             Ok(Point(x, y))
@@ -143,7 +141,7 @@ fn part2(input: &[Point]) -> Option<u64> {
         .iter()
         .copied()
         .tuple_combinations()
-        .filter(|(a, b)| polygon.contains_rectangle(*a, *b))
+        .filter(|&(a, b)| polygon.contains_rectangle(a, b))
         .map(|(a, b)| a.area(b))
         .max()
 }
