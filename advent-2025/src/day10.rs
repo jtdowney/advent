@@ -6,19 +6,19 @@ use std::{
 use anyhow::anyhow;
 use aoc_runner_derive::{aoc, aoc_generator};
 use winnow::{
-    ascii::{dec_int, dec_uint, space1},
+    ascii::{dec_uint, space1},
     combinator::{alt, delimited, repeat, separated, seq},
     prelude::*,
 };
+use z3::{Optimize, SatResult, ast::Int};
 
 type Button = Vec<usize>;
-type Matrix = Vec<Vec<i32>>;
 
 #[derive(Debug)]
 struct Machine {
     target_lights: Vec<bool>,
     buttons: Vec<Button>,
-    joltage: Vec<i32>,
+    joltage: Vec<u64>,
 }
 
 impl Machine {
@@ -52,131 +52,44 @@ impl Machine {
         unreachable!()
     }
 
-    fn min_presses_joltage(&self) -> Option<i32> {
-        let max_val = *self.joltage.iter().max()?;
-        Solver::new(&self.buttons, &self.joltage).solve(max_val)
-    }
-}
+    fn min_presses_joltage(&self) -> Option<u64> {
+        let opt = Optimize::new();
 
-struct Solver {
-    matrix: Matrix,
-    pivot_cols: Vec<usize>,
-    free_cols: Vec<usize>,
-    button_size: usize,
-}
-
-impl Solver {
-    fn new(buttons: &[Button], joltage: &[i32]) -> Self {
-        let button_size = buttons.len();
-        let matrix = Self::build_matrix(buttons, joltage);
-        let (matrix, pivot_cols) = Self::gaussian_elimination(matrix, button_size);
-        let free_cols = (0..button_size)
-            .filter(|c| !pivot_cols.contains(c))
-            .collect();
-
-        Self {
-            matrix,
-            pivot_cols,
-            free_cols,
-            button_size,
-        }
-    }
-
-    fn build_matrix(buttons: &[Button], joltage: &[i32]) -> Matrix {
-        let button_size = buttons.len();
-        joltage
+        let button_vars = self
+            .buttons
             .iter()
             .enumerate()
-            .map(|(i, &j)| {
-                let mut row = (0..button_size)
-                    .map(|b| i32::from(buttons[b].contains(&i)))
-                    .collect::<Vec<_>>();
-                row.push(j);
-                row
-            })
-            .collect()
-    }
+            .map(|(i, _)| Int::new_const(format!("b{i}")))
+            .collect::<Vec<_>>();
 
-    fn gaussian_elimination(mut matrix: Matrix, button_size: usize) -> (Matrix, Vec<usize>) {
-        let row_count = matrix.len();
-
-        let (_, pivot_cols) =
-            (0..button_size).fold((0, vec![]), |(pivot_row, mut pivot_cols), pivot_col| {
-                let Some(swap_row) = (pivot_row..row_count).find(|&r| matrix[r][pivot_col] != 0)
-                else {
-                    return (pivot_row, pivot_cols);
-                };
-
-                matrix.swap(pivot_row, swap_row);
-                pivot_cols.push(pivot_col);
-
-                let pivot_val = matrix[pivot_row][pivot_col];
-                let pivot_row_vals = matrix[pivot_row].clone();
-
-                let rows = matrix
-                    .iter_mut()
-                    .skip(pivot_row + 1)
-                    .filter(|row| row[pivot_col] != 0);
-                for row in rows {
-                    let factor = row[pivot_col];
-                    for (cell, &pivot_cell) in row.iter_mut().zip(&pivot_row_vals) {
-                        *cell = *cell * pivot_val - pivot_cell * factor;
-                    }
-                }
-
-                (pivot_row + 1, pivot_cols)
-            });
-
-        (matrix, pivot_cols)
-    }
-
-    fn try_solve(&self, free_vals: &[i32]) -> Option<i32> {
-        let mut solution = vec![0; self.button_size];
-        for (&col, &val) in self.free_cols.iter().zip(free_vals) {
-            solution[col] = val;
+        for var in &button_vars {
+            opt.assert(&var.ge(&Int::from_u64(0)));
         }
 
-        for (row, &pcol) in self.pivot_cols.iter().enumerate().rev() {
-            let sum = self.matrix[row][self.button_size]
-                - ((pcol + 1)..self.button_size)
-                    .map(|c| self.matrix[row][c] * solution[c])
-                    .sum::<i32>();
+        for (counter_idx, &target) in self.joltage.iter().enumerate() {
+            let sum = self
+                .buttons
+                .iter()
+                .zip(&button_vars)
+                .filter(|(button, _)| button.contains(&counter_idx))
+                .map(|(_, var)| var.clone())
+                .sum::<Int>();
 
-            if sum % self.matrix[row][pcol] != 0 {
-                return None;
+            let target_val = Int::from_u64(target);
+            opt.assert(&sum.eq(&target_val));
+        }
+
+        let total = button_vars.iter().cloned().sum::<Int>();
+        opt.minimize(&total);
+
+        match opt.check(&[]) {
+            SatResult::Sat => {
+                let model = opt.get_model()?;
+                let result = model.eval(&total, false)?;
+                result.as_u64()
             }
-            solution[pcol] = sum / self.matrix[row][pcol];
+            _ => None,
         }
-
-        solution
-            .iter()
-            .all(|&x| x >= 0)
-            .then(|| solution.iter().sum())
-    }
-
-    fn search(&self, free_vals: &[i32], max_val: i32, current_best: Option<i32>) -> Option<i32> {
-        if free_vals.len() == self.free_cols.len() {
-            return self.try_solve(free_vals);
-        }
-
-        let current_sum = free_vals.iter().sum::<i32>();
-        (0..=max_val)
-            .take_while(|&val| current_best.is_none_or(|b| current_sum + val < b))
-            .fold(current_best, |best, val| {
-                let mut next_vals = free_vals.to_vec();
-                next_vals.push(val);
-
-                let result = self.search(&next_vals, max_val, best);
-                match (best, result) {
-                    (Some(b), Some(r)) => Some(b.min(r)),
-                    (None, r) => r,
-                    (b, None) => b,
-                }
-            })
-    }
-
-    fn solve(&self, max_val: i32) -> Option<i32> {
-        self.search(&[], max_val, None)
     }
 }
 
@@ -212,8 +125,8 @@ impl FromStr for Machine {
             separated(1.., button, " ").parse_next(input)
         }
 
-        fn joltage(input: &mut &str) -> winnow::Result<Vec<i32>> {
-            delimited("{", separated(1.., dec_int::<_, i32, _>, ","), "}").parse_next(input)
+        fn joltage(input: &mut &str) -> winnow::Result<Vec<u64>> {
+            delimited("{", separated(1.., dec_uint::<_, u64, _>, ","), "}").parse_next(input)
         }
 
         machine.parse(s).map_err(|e| anyhow!("parse error:\n{e}"))
@@ -231,7 +144,7 @@ fn part1(input: &[Machine]) -> u32 {
 }
 
 #[aoc(day10, part2)]
-fn part2(input: &[Machine]) -> Option<i32> {
+fn part2(input: &[Machine]) -> Option<u64> {
     input.iter().map(Machine::min_presses_joltage).sum()
 }
 
