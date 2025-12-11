@@ -63,7 +63,7 @@ impl Machine {
             .collect::<Vec<_>>();
 
         for var in &button_vars {
-            opt.assert(&var.ge(&Int::from_u64(0)));
+            opt.assert(&var.ge(Int::from_u64(0)));
         }
 
         for (counter_idx, &target) in self.joltage.iter().enumerate() {
