@@ -13,7 +13,9 @@ version = "1.0.0"
 # https://gleam.run/writing-gleam/gleam-toml/.
 
 [dependencies]
+gleam_community_maths = ">= 2.0.2 and < 3.0.0"
 gleam_stdlib = ">= 1.0.0 and < 2.0.0"
+iv = ">= 1.4.4 and < 2.0.0"
 simplifile = ">= 2.4.0 and < 3.0.0"
 
 [dev_dependencies]

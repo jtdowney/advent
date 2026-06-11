@@ -165,14 +165,15 @@ fn contains_rectangle(polygon: Polygon, a: Point, b: Point) -> Bool {
   let y1 = int.min(ay, by)
   let y2 = int.max(ay, by)
 
-  use y <- list.all(scanline_ys_in_range(polygon, y1, y2))
-  case dict.get(polygon.interval_cache, y) {
-    Ok(intervals) ->
-      list.any(intervals, fn(interval) {
-        interval_contains(interval, x1) && interval_contains(interval, x2)
-      })
-    Error(_) -> False
-  }
+  list.all(scanline_ys_in_range(polygon, y1, y2), fn(y) {
+    case dict.get(polygon.interval_cache, y) {
+      Ok(intervals) ->
+        list.any(intervals, fn(interval) {
+          interval_contains(interval, x1) && interval_contains(interval, x2)
+        })
+      Error(_) -> False
+    }
+  })
 }
 
 fn find_max_contained(
