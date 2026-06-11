@@ -52,7 +52,7 @@ fn neighbors(point: Point, grid: Set(Point)) -> List(Point) {
     #(x, y + 1),
     #(x + 1, y + 1),
   ]
-  |> list.filter(fn(neighbor) { set.contains(grid, neighbor) })
+  |> list.filter(keeping: set.contains(grid, _))
 }
 
 fn is_removable(point: Point, grid: Set(Point)) -> Bool {
@@ -70,7 +70,7 @@ fn collapse(grid: Set(Point)) -> Set(Point) {
 fn part1(grid: Set(Point)) -> Nil {
   let answer =
     grid
-    |> set.filter(fn(point) { is_removable(point, grid) })
+    |> set.filter(keeping: is_removable(_, grid))
     |> set.size
 
   io.println("Part 1: " <> int.to_string(answer))

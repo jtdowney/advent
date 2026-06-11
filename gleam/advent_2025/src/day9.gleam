@@ -103,13 +103,12 @@ fn merge_interval(
 fn intervals_at_y(edges: List(#(Point, Point)), y: Int) -> List(Interval) {
   let raycast =
     edges
-    |> list.filter_map(with: fn(edge) { vertical_crossing(edge, y) })
+    |> list.filter_map(with: vertical_crossing(_, y))
     |> list.sort(by: int.compare)
     |> list.sized_chunk(into: 2)
     |> list.filter_map(with: pair_crossings)
 
-  let horizontal =
-    list.filter_map(edges, with: fn(edge) { horizontal_interval(edge, y) })
+  let horizontal = list.filter_map(edges, with: horizontal_interval(_, y))
 
   list.append(raycast, horizontal)
   |> list.sort(by: fn(a, b) { int.compare(a.0, b.0) })

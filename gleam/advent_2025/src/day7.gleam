@@ -85,7 +85,7 @@ fn step_count(
   let next =
     positions
     |> set.to_list
-    |> list.flat_map(with: fn(x) { advance(x, splitters) })
+    |> list.flat_map(with: advance(_, splitters))
     |> list.filter(keeping: fn(nx) { nx >= 0 && nx < width })
     |> set.from_list
 

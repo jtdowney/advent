@@ -75,7 +75,7 @@ fn part1(input: Input) -> Nil {
   let answer =
     input.ids
     |> list.count(where: fn(id) {
-      list.any(input.ranges, fn(range) { in_range(range, id) })
+      list.any(input.ranges, satisfying: in_range(_, id))
     })
 
   io.println("Part 1: " <> int.to_string(answer))
