@@ -1,3 +1,4 @@
+import gleam/bit_array
 import gleam/bool
 import gleam/int
 import gleam/io
@@ -25,22 +26,28 @@ fn parse_input(data: String) -> List(#(Int, Int)) {
   })
 }
 
-fn repeats_n_times(id: String, times: Int) -> Bool {
-  use <- bool.guard(when: string.length(id) % times != 0, return: False)
-  let chunk_size = string.length(id) / times
-  let first = string.slice(id, 0, chunk_size) |> string.to_graphemes
+fn repeats(bytes: BitArray, length: Int, times: Int) -> Bool {
+  use <- bool.guard(when: length % times != 0, return: False)
+  let chunk_size = length / times
+  let first = bit_array.slice(bytes, 0, chunk_size)
 
-  string.to_graphemes(id)
-  |> list.sized_chunk(chunk_size)
-  |> list.all(fn(chunk) { chunk == first })
+  int.range(from: 1, to: times, with: True, run: fn(ok, i) {
+    ok && bit_array.slice(bytes, i * chunk_size, chunk_size) == first
+  })
+}
+
+fn repeats_n_times(id: String, times: Int) -> Bool {
+  let bytes = bit_array.from_string(id)
+  repeats(bytes, bit_array.byte_size(bytes), times)
 }
 
 fn is_repeated(id: String) -> Bool {
-  let length = string.length(id)
+  let bytes = bit_array.from_string(id)
+  let length = bit_array.byte_size(bytes)
   use <- bool.guard(when: length < 2, return: False)
 
   int.range(from: 2, to: length + 1, with: False, run: fn(acc, times) {
-    acc || repeats_n_times(id, times)
+    acc || repeats(bytes, length, times)
   })
 }
 
