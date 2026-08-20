@@ -174,11 +174,8 @@ fn part1(input: &Almanac) -> Option<u32> {
 #[aoc(day5, part2)]
 fn part2(input: &Almanac) -> Option<u32> {
     let mut lowest_value = u32::MAX;
-    let pairs = input.seeds.chunks_exact(2);
-    for pair in pairs {
-        let start = pair[0];
-        let length = pair[1];
-
+    let (chunks, _) = input.seeds.as_chunks::<2>();
+    for &[start, length] in chunks {
         let mut current = vec![(start, length)];
         let mut source = Category::Seed;
         while let Some(map) = input.category_maps.get(&source) {

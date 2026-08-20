@@ -31,7 +31,7 @@ fn neighbors((x, y): Point) -> impl Iterator<Item = Point> {
 }
 
 fn step(state: &mut HashMap<Point, u8>) -> usize {
-    for (_, energy) in state.iter_mut() {
+    for energy in state.values_mut() {
         *energy += 1;
     }
 
